@@ -1,35 +1,37 @@
 // app/routes/auth.tsx
-import { useEffect } from "react";
-
-// Deklarasi agar TypeScript tidak protes soal window.netlifyIdentity
-declare global {
-    interface Window {
-        netlifyIdentity?: any;
-    }
-}
+import { useEffect, useState } from "react";
 
 export default function AuthRedirect() {
-    useEffect(() => {
-        const script = document.createElement("script");
-        script.src = "https://identity.netlify.com/v1/netlify-identity-widget.js";
-        script.async = true;
-        document.body.appendChild(script);
+    const [status, setStatus] = useState("Menghubungkan ke GitHub...");
 
-        script.onload = () => {
-            if (window.netlifyIdentity) {
-                window.netlifyIdentity.on("init", (user: any) => {
-                    if (!user) {
-                        window.netlifyIdentity.open();
-                    }
-                });
-            }
-        };
+    useEffect(() => {
+        // Pastikan kode ini hanya berjalan di sisi browser (client-side)
+        if (typeof window === "undefined") return;
+
+        const hash = window.location.hash;
+        const search = window.location.search;
+        const token = new URLSearchParams(search).get("access_token") || hash;
+
+        if (window.opener) {
+            window.opener.postMessage(
+                {
+                    provider: "github",
+                    token: token,
+                },
+                window.location.origin
+            );
+            setStatus("Autentikasi Berhasil! Menutup jendela...");
+            setTimeout(() => {
+                window.close();
+            }, 1000);
+        } else {
+            setStatus("Gagal mendeteksi jendela utama. Silakan tutup tab ini.");
+        }
     }, []);
 
     return (
         <div style={{ padding: "40px", fontFamily: "sans-serif", textAlign: "center" }}>
-            <h3>Menghubungkan ke GitHub...</h3>
-            <p>Mohon tunggu sebentar, jendela ini akan menutup otomatis setelah selesai.</p>
+            <h3>{status}</h3>
         </div>
     );
 }
