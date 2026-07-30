@@ -111,7 +111,7 @@ async function getLatestCommitSha(
   const headers: HeadersInit = {
     Accept: "application/vnd.github+json",
     // Include GitHub PAT if provided to increase rate limits
-    ...(process.env.GITHUB_PAT ? { Authorization: `token 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` } : {}),
+    ...(process.env.GITHUB_PAT ? { Authorization: `token ${process.env.GITHUB_PAT}` } : {}),
   };
 
   if (commitCache?.etag) {
