@@ -2,9 +2,10 @@ export const cmsConfig = {
   load_config_file: false,
   backend: {
     name: "github" as const,
-    repo: "neropx1/test-cms-decap",
+    repo: "neropx1/blog-marhalah",
     branch: "main",
-    base_url: "https://impervious-blog.netlify.app"
+    base_url: "https://api.netlify.com",
+    auth_endpoint: "auth",
   },
 
   media_folder: "cloudinary",
