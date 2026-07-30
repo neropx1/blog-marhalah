@@ -16,21 +16,21 @@
 
 
 :root {
-  --color-primary: #C9A84C;
-  --color-primary-strong: #E8C96A;
-  --color-primary-soft: #F5DFA0;
-  --color-text-primary: #F5E8C0;
-  --color-text-secondary: #D9C08F;
-  --color-text-muted: #B8A57A;
-  --color-surface: #1C1710;
-  --color-surface-strong: #251E15;
-  --color-background: #120E0A;
+  --color-primary: #D4AF37;
+  --color-primary-strong: #F3C649;
+  --color-primary-soft: #F7E4A9;
+  --color-text-primary: #FAF2DF;
+  --color-text-secondary: #E3D2AE;
+  --color-text-muted: #C0AE86;
+  --color-surface: #1A150F;
+  --color-surface-strong: #241D14;
+  --color-background: #0E0B08;
 
   /* Light Mode */
-  --bg-light: #FAF6F0;
-  --bg-light-2: #F0EAE0;
-  --text-light: #12100A;
-  --text-light-secondary: #4A4440;
+  --bg-light: #FBF9F4;
+  --bg-light-2: #F3EDE0;
+  --text-light: #16120B;
+  --text-light-secondary: #524738;
 
   /* Dark Mode */
   --bg-dark: var(--color-background);
@@ -44,32 +44,35 @@
   --gold-soft: var(--color-primary-soft);
 
   /* Accent Colors */
-  --accent-red: #C41E3A;
-  --accent-green: #228B22;
+  --accent-red: #D93848;
+  --accent-green: #27AE60;
 
   /* Border */
-  --border-light: var(--color-primary-soft);
-  --border-dark: rgba(201, 168, 76, 0.25);
+  --border-light: rgba(212, 175, 55, 0.3);
+  --border-dark: rgba(212, 175, 55, 0.2);
 
   color-scheme: dark;
-  font-family: "Merriweather", sans-serif;
+  font-family: "Merriweather", serif;
 }
 
 @theme {
-  --color-primary: #C9A84C;
-  --color-primary-strong: #E8C96A;
-  --color-primary-soft: #F5DFA0;
-  --color-text-primary: #F5E8C0;
-  --color-text-secondary: #D9C08F;
-  --color-text-muted: #B8A57A;
-  --color-surface: #1C1710;
-  --color-surface-strong: #251E15;
-  --color-background: #120E0A;
+  --color-primary: #D4AF37;
+  --color-primary-strong: #F3C649;
+  --color-primary-soft: #F7E4A9;
+  --color-text-primary: #FAF2DF;
+  --color-text-secondary: #E3D2AE;
+  --color-text-muted: #C0AE86;
+  --color-surface: #1A150F;
+  --color-surface-strong: #241D14;
+  --color-background: #0E0B08;
 }
 
 body {
   background-color: var(--bg-dark);
-  background-image: radial-gradient(circle at top left, rgba(201, 168, 76, 0.14), transparent 35%), linear-gradient(180deg, #120E0A 0%, #17120D 50%, #120E0A 100%);
+  background-image: 
+    radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 100% 100%, rgba(180, 130, 30, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #0E0B08 0%, #15110B 50%, #0E0B08 100%);
   color: var(--text-dark);
   margin: 0;
   min-height: 100vh;

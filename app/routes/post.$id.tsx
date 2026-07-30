@@ -1,12 +1,34 @@
-import { json, type LoaderFunction, MetaFunction } from "@remix-run/node";
+import { json, type LoaderFunction } from "@remix-run/node";
 import { useLoaderData, Link } from "@remix-run/react";
-import { fetchPostsFromGithub } from "~/utils/github-posts";
+import { fetchPostsFromGithub, type CoverImageItem } from "~/utils/github-posts";
 import ReactMarkdown, { type Components } from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import Footer from "~/components/Footer";
+import { useState, useRef, useMemo } from "react";
 
+// Helper membagi artikel panjang ke dalam beberapa halaman
+function paginateMarkdown(content: string, paragraphsPerPage = 6): string[] {
+  if (!content) return [""];
 
+  // 1. Jika file markdown menggunakan tag pemisah manual `<!-- pagebreak -->`
+  if (/<!--\s*pagebreak\s*-->/i.test(content)) {
+    const manualPages = content.split(/<!--\s*pagebreak\s*-->/i).filter((p) => p.trim().length > 0);
+    if (manualPages.length > 0) return manualPages;
+  }
 
+  // 2. Bagi otomatis berdasarkan paragraf / blok baris ganda jika terlalu panjang
+  const blocks = content.split(/\r?\n\s*\r?\n/);
+  
+  if (blocks.length <= paragraphsPerPage) {
+    return [content];
+  }
+
+  const pages: string[] = [];
+  for (let i = 0; i < blocks.length; i += paragraphsPerPage) {
+    pages.push(blocks.slice(i, i + paragraphsPerPage).join("\n\n"));
+  }
+  return pages;
+}
 
 export const loader: LoaderFunction = async ({ params }) => {
   const posts = await fetchPostsFromGithub();
@@ -16,7 +38,16 @@ export const loader: LoaderFunction = async ({ params }) => {
     throw new Response("Post not found", { status: 404 });
   }
 
-  return json({ post });
+  // Rekomendasi artikel: ambil post lain (maksimal 4)
+  const otherPosts = posts.filter((p: any) => p.id !== params.id);
+  
+  // Utamakan post dengan kategori yang sama
+  const sameCategory = otherPosts.filter((p: any) => p.category === post.category);
+  const diffCategory = otherPosts.filter((p: any) => p.category !== post.category);
+
+  const relatedPosts = [...sameCategory, ...diffCategory].slice(0, 4);
+
+  return json({ post, relatedPosts });
 };
 
 interface Post {
@@ -30,14 +61,15 @@ interface Post {
   body: string;
   tags: string[];
   cover_image?: string;
+  cover_images?: (string | CoverImageItem)[];
 }
 
 interface LoaderData {
   post: Post;
+  relatedPosts: Post[];
 }
 
-
-// Custom components for markdown rendering
+// Custom components for markdown rendering (termasuk deskripsi foto / figcaption)
 const MarkdownComponents: Components = {
   h1: ({ children }) => (
     <h1 className="text-4xl md:text-4xl font-bold text-white mb-6 font-[Texturina]">
@@ -95,23 +127,208 @@ const MarkdownComponents: Components = {
     </pre>
   ),
   img: (props) => (
-    <img src={props.src} alt={props.alt} className="w-full rounded-lg shadow-lg my-6 border border-slate-800" />
+    <figure className="my-8">
+      <img src={props.src} alt={props.alt || ""} className="w-full rounded-xl shadow-xl border border-slate-800" />
+      {props.alt && props.alt.trim() !== "" && (
+        <figcaption className="text-center text-xs md:text-sm text-slate-400 mt-3 font-[Merriweather] italic flex items-center justify-center gap-2">
+          <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span>{props.alt}</span>
+        </figcaption>
+      )}
+    </figure>
   ),
 };
 
+// Component Slider Cover Image (Mendukung Deskripsi per Foto)
+function CoverImageSlider({ images, title }: { images: (string | CoverImageItem)[]; title: string }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
+  // Normalize array to CoverImageItem[]
+  const imageItems: CoverImageItem[] = (images || []).map((img) =>
+    typeof img === "string" ? { url: img } : img
+  );
+
+  if (!imageItems || imageItems.length === 0) return null;
+
+  const currentItem = imageItems[currentIndex] || imageItems[0];
+
+  if (imageItems.length === 1) {
+    return (
+      <div className="mb-8 rounded-xl overflow-hidden shadow-2xl border border-amber-500/30 bg-slate-950">
+        <img src={currentItem.url} alt={title} className="w-full h-auto max-h-[550px] object-cover" />
+        {currentItem.caption && (
+          <div className="bg-slate-900/90 border-t border-amber-500/20 px-5 py-3 text-slate-200 text-sm font-[Merriweather] flex items-center gap-3">
+            <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span className="leading-snug">{currentItem.caption}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev === 0 ? imageItems.length - 1 : prev - 1));
+  };
+
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev === imageItems.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const distance = touchStartX.current - touchEndX.current;
+    const isSwipeLeft = distance > 40;
+    const isSwipeRight = distance < -40;
+
+    if (isSwipeLeft) {
+      nextSlide();
+    } else if (isSwipeRight) {
+      prevSlide();
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
+  return (
+    <div className="mb-8 relative group">
+      {/* Slider Container */}
+      <div
+        className={`overflow-hidden shadow-2xl border border-amber-500/30 relative bg-slate-950 aspect-[16/9] md:aspect-[21/9] ${
+          currentItem.caption ? "rounded-t-xl" : "rounded-xl"
+        }`}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div
+          className="flex h-full transition-transform duration-500 ease-out"
+          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        >
+          {imageItems.map((img, idx) => (
+            <div key={idx} className="w-full h-full flex-shrink-0 relative">
+              <img
+                src={img.url}
+                alt={`${title} - Gambar ${idx + 1}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Counter Badge */}
+        <div className="absolute top-4 right-4 bg-slate-900/80 backdrop-blur-md text-amber-400 text-xs px-3 py-1.5 rounded-full border border-amber-500/30 font-mono z-10">
+          {currentIndex + 1} / {imageItems.length}
+        </div>
+
+        {/* Navigation Buttons */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-slate-900/80 border border-amber-500/30 text-amber-400 flex items-center justify-center hover:bg-amber-500 hover:text-slate-950 transition z-10 opacity-80 hover:opacity-100 shadow-lg"
+          aria-label="Gambar Sebelumnya"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          onClick={nextSlide}
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-slate-900/80 border border-amber-500/30 text-amber-400 flex items-center justify-center hover:bg-amber-500 hover:text-slate-950 transition z-10 opacity-80 hover:opacity-100 shadow-lg"
+          aria-label="Gambar Selanjutnya"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        {/* Dots Navigation */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10 bg-slate-900/70 backdrop-blur-sm px-3 py-1.5 rounded-full border border-slate-800">
+          {imageItems.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentIndex(idx)}
+              className={`h-2 rounded-full transition-all ${
+                currentIndex === idx ? "w-6 bg-amber-400" : "w-2 bg-slate-500 hover:bg-slate-300"
+              }`}
+              aria-label={`Ke gambar ${idx + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Caption Bar (Deskripsi Foto) */}
+      {currentItem.caption && (
+        <div className="bg-slate-900/95 backdrop-blur-md border-x border-b border-amber-500/30 px-5 py-3 rounded-b-xl text-slate-200 text-sm font-[Merriweather] flex items-center gap-3">
+          <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span className="leading-snug">{currentItem.caption}</span>
+        </div>
+      )}
+
+      {/* Thumbnail Selector Strip */}
+      <div className="flex gap-3 mt-3 overflow-x-auto pb-2 scrollbar-thin">
+        {imageItems.map((img, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrentIndex(idx)}
+            className={`relative rounded-lg overflow-hidden h-16 w-24 flex-shrink-0 border-2 transition ${
+              currentIndex === idx
+                ? "border-amber-400 ring-2 ring-amber-400/50 opacity-100 scale-105"
+                : "border-slate-800 opacity-60 hover:opacity-100"
+            }`}
+          >
+            <img src={img.url} alt="" className="w-full h-full object-cover" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function PostDetail() {
-  const { post } = useLoaderData<LoaderData>();
-  const posts = useLoaderData<LoaderData>().post;
+  const { post, relatedPosts } = useLoaderData<LoaderData>();
 
-  // Get all posts untuk rekomendasi
-  const allPosts = useLoaderData<LoaderData>();
+  // Pagination artikel
+  const contentPages = useMemo(() => paginateMarkdown(post.body, 6), [post.body]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const articleTopRef = useRef<HTMLDivElement>(null);
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > contentPages.length) return;
+    setCurrentPage(page);
+    if (articleTopRef.current) {
+      articleTopRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  // Determine cover images available
+  const coverImages =
+    post.cover_images && post.cover_images.length > 0
+      ? post.cover_images
+      : post.cover_image
+      ? [post.cover_image]
+      : [];
 
   // Generate share URLs
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
   const shareTitle = encodeURIComponent(post.title);
-  const shareText = encodeURIComponent(post.description);
 
   const shareLinks = {
     twitter: `https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`,
@@ -123,34 +340,30 @@ export default function PostDetail() {
   return (
     <main className="min-h-screen">
       <article className="mx-auto max-w-4xl px-6 py-8 lg:px-8">
-        {/* Cover Image */}
-        {post.cover_image && (
-          <div className="mb-8 rounded-lg overflow-hidden shadow-2xl border border-amber-500/30">
-            <img src={post.cover_image} alt={post.title} className="w-full h-auto object-cover" />
-          </div>
-        )}
+        {/* Multi Cover Image Slider with Captions */}
+        <CoverImageSlider images={coverImages} title={post.title} />
 
         {/* Header */}
-        <header className="mb-10">
+        <header ref={articleTopRef} className="mb-10 scroll-mt-10">
           <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
             <span className="inline-block bg-amber-500/20 text-amber-400 px-4 py-2 text-sm font-semibold rounded-full border border-amber-500/30">
               {post.category}
             </span>
             <time className="text-sm text-slate-400 font-[Merriweather]">{post.date}</time>
           </div>
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight font-[Texturina]">{post.title}</h1>
-          <p className="text-lg md:text-xl text-slate-300 mb-6 font-[Merriweather]">{post.description}</p>
-          <div className="flex items-center gap-6 border-t border-slate-800 pt-6 flex-wrap gap-4">
+          <h1 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight font-zhoro">{post.title}</h1>
+          <p className="text-lg md:text-xl text-amber-100/80 mb-6 font-[Merriweather]">{post.description}</p>
+          <div className="flex items-center gap-6 border-t border-amber-500/20 pt-6 flex-wrap">
             <div>
-              <p className="text-sm text-slate-500 mb-1">Ditulis oleh</p>
-              <p className="font-semibold text-white font-[Merriweather]">{post.author}</p>
+              <p className="text-sm text-amber-200/50 mb-1">Ditulis oleh</p>
+              <p className="font-semibold text-amber-300 font-[Merriweather]">{post.author}</p>
             </div>
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag: string) => (
                   <span
                     key={tag}
-                    className="bg-amber-500/20 text-amber-400 px-3 py-1 text-sm rounded-full border border-amber-500/30 font-[Merriweather]"
+                    className="bg-amber-500/15 text-amber-300 px-3 py-1 text-sm rounded-full border border-amber-500/30 font-[Merriweather]"
                   >
                     #{tag}
                   </span>
@@ -161,25 +374,73 @@ export default function PostDetail() {
         </header>
 
         {/* Content */}
-        <div className="mb-16">
+        <div className="mb-10">
           <div className="prose prose-invert max-w-none">
             <ReactMarkdown components={MarkdownComponents} rehypePlugins={[rehypeRaw]}>
-              {post.body}
+              {contentPages[currentPage - 1] || ""}
             </ReactMarkdown>
           </div>
         </div>
 
+        {/* Article Content Pagination (tampil jika artikel memiliki > 1 halaman) */}
+        {contentPages.length > 1 && (
+          <div className="my-10 p-5 bg-amber-950/30 border border-amber-500/30 rounded-2xl backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_0_20px_rgba(212,175,55,0.1)]">
+            <div className="text-sm font-[Merriweather] text-amber-200/80">
+              Halaman <span className="font-bold text-amber-400">{currentPage}</span> dari{" "}
+              <span className="font-bold text-amber-400">{contentPages.length}</span>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap justify-center">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-lg border border-amber-500/30 text-amber-300 text-sm font-semibold transition hover:bg-amber-500/20 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                ← Sebelumnya
+              </button>
+
+              <div className="flex items-center gap-1.5">
+                {contentPages.map((_, idx) => {
+                  const pageNum = idx + 1;
+                  const isActive = currentPage === pageNum;
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`w-9 h-9 rounded-lg text-sm font-bold transition flex items-center justify-center ${
+                        isActive
+                          ? "bg-amber-500 text-slate-950 shadow-[0_0_12px_rgba(212,175,55,0.4)]"
+                          : "bg-amber-950/40 text-amber-300 border border-amber-500/20 hover:bg-amber-900/50"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === contentPages.length}
+                className="px-4 py-2 rounded-lg border border-amber-500/30 text-amber-300 text-sm font-semibold transition hover:bg-amber-500/20 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Selanjutnya →
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Divider */}
         <div className="border-t border-slate-800 my-12" />
 
-        {/* Footer */}
+        {/* Author & Share */}
         <div className="grid gap-8 sm:grid-cols-2 mb-16">
           <div className="bg-slate-900/50 border border-slate-800/50 rounded-lg p-8">
-            <h4 className="font-semibold text-amber-400 mb-4">Tentang Penulis</h4>
+            <h4 className="font-semibold text-amber-400 mb-4 font-zhoro">Tentang Penulis</h4>
             <p className="text-slate-300 font-[Merriweather]">{post.author}</p>
           </div>
           <div className="bg-amber-500/5 border border-amber-500/30 rounded-lg p-8">
-            <h4 className="font-semibold text-amber-400 mb-4">Bagikan Artikel</h4>
+            <h4 className="font-semibold text-amber-400 mb-4 font-zhoro">Bagikan Artikel</h4>
             <div className="flex gap-3">
               <a href={shareLinks.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-amber-600/50 transition text-amber-400 hover:text-white" title="Bagikan ke Twitter">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75 2.25 7-7 7-7" /></svg>
@@ -198,25 +459,71 @@ export default function PostDetail() {
         </div>
       </article>
 
-      {/* Related Posts */}
+      {/* Related Posts Recommendation Section */}
       <section className="mx-auto max-w-4xl px-6 py-12 lg:px-8 border-t border-slate-800">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-2 h-2 rounded-full bg-amber-500" />
+          <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
           <h2 className="text-2xl font-bold text-white font-zhoro">Artikel Rekomendasi</h2>
         </div>
-        <div className="grid gap-6 sm:grid-cols-2">
-          <Link
-            to="/"
-            className="group bg-slate-900/50 border border-slate-800/50 rounded-lg overflow-hidden hover:border-amber-500/50 hover:bg-slate-900/70 transition"
-          >
-            <div className="aspect-video bg-gradient-to-br from-amber-500/10 to-amber-600/10 flex items-center justify-center overflow-hidden relative group-hover:from-amber-500/20 group-hover:to-amber-600/20 transition" />
-            <div className="p-6">
-              <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-3">Lihat Lebih</p>
+
+        {relatedPosts && relatedPosts.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2">
+            {relatedPosts.map((relPost) => (
+              <Link
+                key={relPost.id}
+                to={`/post/${relPost.id}`}
+                className="group bg-slate-900/50 border border-slate-800/50 rounded-xl overflow-hidden hover:border-amber-500/50 hover:bg-slate-900/80 transition duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="aspect-video bg-gradient-to-br from-amber-500/10 to-amber-600/10 flex items-center justify-center overflow-hidden relative">
+                    {relPost.cover_image ? (
+                      <img
+                        src={relPost.cover_image}
+                        alt={relPost.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-60 flex items-center justify-center">
+                        <span className="text-3xl">📰</span>
+                      </div>
+                    )}
+                    <span className="absolute top-3 left-3 bg-amber-500/20 text-amber-400 text-xs px-3 py-1 rounded-full border border-amber-500/30 backdrop-blur-md font-[Merriweather]">
+                      {relPost.category}
+                    </span>
+                  </div>
+
+                  <div className="p-6">
+                    <p className="text-xs text-slate-400 font-[Merriweather] mb-2">{relPost.date}</p>
+                    <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition font-[Texturina] line-clamp-2 leading-snug">
+                      {relPost.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-slate-300 font-[Merriweather] line-clamp-2">
+                      {relPost.description}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="px-6 pb-6 pt-0 flex items-center gap-2 text-xs font-semibold text-amber-400 group-hover:translate-x-1 transition">
+                  <span>Baca Selengkapnya</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2">
+            <Link
+              to="/"
+              className="group bg-slate-900/50 border border-slate-800/50 rounded-lg overflow-hidden hover:border-amber-500/50 hover:bg-slate-900/70 transition p-6"
+            >
+              <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2">Lihat Lebih</p>
               <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition font-zhoro">Kembali ke Halaman Utama</h3>
               <p className="mt-2 text-sm text-slate-400 font-[Merriweather]">Lihat semua artikel dan rekomendasi lainnya</p>
-            </div>
-          </Link>
-        </div>
+            </Link>
+          </div>
+        )}
       </section>
 
       {/* Footer */}

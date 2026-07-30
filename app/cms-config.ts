@@ -42,15 +42,42 @@ export const cmsConfig = {
           required: false,
         },
         {
-          label: "Gambar Sampul",
+          label: "Gambar Sampul Utama",
           name: "cover_image",
           widget: "image" as const,
-          required: true,
+          required: false,
           media_library: {
             config: {
               multiple: false,
             },
           },
+        },
+        {
+          label: "Deskripsi Sampul Utama",
+          name: "cover_image_caption",
+          widget: "string" as const,
+          required: false,
+        },
+        {
+          label: "Galeri / Gambar Sampul Tambahan (Slider)",
+          name: "cover_images",
+          widget: "list" as const,
+          summary: "{{fields.caption}} ({{fields.image}})",
+          fields: [
+            {
+              label: "Gambar",
+              name: "image",
+              widget: "image" as const,
+              required: true,
+            },
+            {
+              label: "Deskripsi / Keterangan Foto",
+              name: "caption",
+              widget: "string" as const,
+              required: false,
+            },
+          ],
+          required: false,
         },
         {
           label: "Deskripsi Singkat",
@@ -70,6 +97,18 @@ export const cmsConfig = {
           name: "author",
           widget: "string" as const,
           required: true,
+        },
+        {
+          label: "Editor",
+          name: "editor",
+          widget: "string" as const,
+          required: false,
+        },
+        {
+          label: "Fotografer",
+          name: "photographer",
+          widget: "string" as const,
+          required: false,
         },
         {
           label: "Email Penulis",

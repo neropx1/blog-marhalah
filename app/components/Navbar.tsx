@@ -17,19 +17,17 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition flex-shrink-0">
-            <img className="w-8 h-8 rounded " src="/lambang.webp"/>
-            <div className="text-lg md:text-2xl font-bold font-[Zhoro] text-gold-900 ">Impervio<span className="font-[Zhoro]" style={{ color: "var(--gold-soft)"}}>.us</span></div>
+            <img className="w-32 md:w-48 " src="/horizontal.webp" />
           </Link>
 
           {/* Desktop Nav Links */}
           <div className="hidden md:flex gap-8 items-center">
             <Link
               to="/"
-              className={`nav-link transition text-sm font-medium ${
-                isActive("/")
-                  ? "border-b-2"
-                  : "hover:opacity-70"
-              }`}
+              className={`nav-link transition text-sm font-medium ${isActive("/")
+                ? "border-b-2"
+                : "hover:opacity-70"
+                }`}
               style={{
                 color: isActive("/") ? "var(--gold)" : undefined,
                 borderColor: "var(--gold)"
@@ -39,11 +37,10 @@ export default function Navbar() {
             </Link>
             <Link
               to="/jelajahi"
-              className={`nav-link transition text-sm font-medium ${
-                isActive("/jelajahi")
-                  ? "border-b-2"
-                  : "hover:opacity-70"
-              }`}
+              className={`nav-link transition text-sm font-medium ${isActive("/jelajahi")
+                ? "border-b-2"
+                : "hover:opacity-70"
+                }`}
               style={{
                 color: isActive("/jelajahi") ? "var(--gold)" : undefined,
                 borderColor: "var(--gold)"

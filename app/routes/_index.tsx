@@ -94,16 +94,11 @@ export default function Index() {
           {/* Brand Header */}
           <div className="text-center mb-12 md:mb-16">
             <div className="inline-block mb-4">
-              <div className="w-64 h-64 flex items-center justify-center">
-                <img src="lambang.webp" alt="" />
+              <div className="w-96 flex items-center justify-center">
+                <img src="master_text_logo_horizontal.webp" />
               </div>
             </div>
-            <h1 className="text-5xl md:text-7xl mb-4 text-title-1">
-              Impervious Generation
-            </h1>
-            <p className="text-xl md:text-2xl mb-6 font-[Merriweather]" style={{ color: "var(--gold)" }}>
-              Generasi Tonggak Kedua Gontor
-            </p>
+
             <p className="text-lg max-w-2xl mx-auto font-[Merriweather] leading-relaxed" style={{ color: "var(--text-dark)" }}>
               Berbagi cerita, pengetahuan, dan inspirasi dari perjalanan kami. Ruang untuk mengeksplorasi ide-ide baru dan belajar bersama komunitas.
             </p>
@@ -139,49 +134,53 @@ export default function Index() {
       <section className="mx-auto max-w-7xl px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-10">
             {/* Featured Post */}
             {featuredPost && (
-              <div id="latest" className="group bg-amber-900/25 border-2 rounded-xl overflow-hidden transition transform hover:shadow-2xl" style={{ borderColor: "var(--border-dark)" }}>
-                <div className="aspect-video bg-gradient-to-br from-amber-500/20 to-amber-600/10 overflow-hidden relative flex items-center justify-center">
+              <div id="latest" className="group relative rounded-2xl overflow-hidden transition-all duration-300 backdrop-blur-md bg-gradient-to-br from-amber-950/40 via-amber-900/15 to-black/70 border border-amber-500/25 hover:border-amber-400/60 hover:shadow-[0_0_30px_rgba(212,175,55,0.15)]">
+                <div className="aspect-video bg-gradient-to-br from-amber-900/30 to-amber-950/20 overflow-hidden relative flex items-center justify-center">
                   {featuredPost.cover_image ? (
                     <img
                       src={featuredPost.cover_image}
                       alt={featuredPost.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                     />
                   ) : (
                     <>
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-60" />
-                      <span className="text-amber-400 font-bold text-4xl relative z-10">📰</span>
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
+                      <span className="text-amber-400 font-bold text-5xl relative z-10">📰</span>
                     </>
                   )}
-                </div>
-                <div className="p-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="inline-block bg-amber-600/30 text-amber-400 px-4 py-1 text-sm font-semibold rounded-full border" style={{ borderColor: "var(--border-dark)", color: "var(--gold)" }}>
+                  <div className="absolute top-4 left-4 z-10 flex gap-2">
+                    <span className="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 backdrop-blur-md">
                       FEATURED
                     </span>
-                    <span className="text-sm text-slate-500">{featuredPost.date}</span>
+                    <span className="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-semibold bg-slate-900/80 text-amber-200/90 border border-slate-700/50 backdrop-blur-md">
+                      {featuredPost.category}
+                    </span>
                   </div>
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight font-[Texturina] group-hover:transition" style={{ color: "var(--gold-bright)" }}>
+                </div>
+                <div className="p-8">
+                  <div className="flex items-center gap-3 mb-3 text-xs text-amber-200/60">
+                    <span>{featuredPost.date}</span>
+                  </div>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight font-zhoro text-amber-200 group-hover:text-amber-300 transition duration-300">
                     {featuredPost.title}
                   </h2>
-                  <p className="text-lg mb-6 leading-relaxed font-[Merriweather]" style={{ color: "var(--text-dark)" }}>
+                  <p className="text-lg mb-6 leading-relaxed font-[Merriweather] text-amber-100/80">
                     {featuredPost.description}
                   </p>
-                  <div className="flex items-center justify-between flex-wrap gap-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-slate-400">oleh</span>
-                      <span className="text-sm font-semibold" style={{ color: "var(--gold)" }}>{featuredPost.author}</span>
+                  <div className="flex items-center justify-between flex-wrap gap-4 pt-4 border-t border-amber-500/15">
+                    <div className="flex items-center gap-2 text-sm text-amber-200/70">
+                      <span className="opacity-60">Oleh:</span>
+                      <span className="font-semibold text-amber-300">{featuredPost.author}</span>
                     </div>
                     <Link
                       to={`/post/${featuredPost.id}`}
-                      className="inline-flex items-center gap-2 font-semibold transition"
-                      style={{ color: "var(--gold)" }}
+                      className="inline-flex items-center gap-2 font-semibold text-amber-400 hover:text-amber-200 transition"
                     >
                       Baca Lengkap
-                      <svg className="w-5 h-5 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
                     </Link>
@@ -193,28 +192,28 @@ export default function Index() {
             {/* Articles Grid */}
             {otherPosts.length > 0 && (
               <div>
-                <h3 className="text-2xl font-bold mb-6 font-zhoro" style={{ color: "var(--gold-bright)" }}>
+                <h3 className="text-2xl font-bold mb-6 font-zhoro text-amber-300 flex items-center gap-3">
+                  <span className="w-2 h-6 bg-amber-400 rounded-full inline-block" />
                   Artikel Lainnya
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {otherPosts.map((post, idx) => (
+                  {otherPosts.map((post) => (
                     <Link
                       key={post.id}
                       to={`/post/${post.id}`}
-                      className="group rounded-lg bg-amber-900/25 hover-lift"
-                      style={{ borderColor: "var(--border-dark)", borderWidth: "1px" }}
+                      className="group rounded-xl bg-amber-950/20 border border-amber-500/20 hover:border-amber-400/50 hover:bg-amber-900/30 transition-all duration-300 flex flex-col overflow-hidden hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(212,175,55,0.12)]"
                     >
                       {/* Image */}
-                      <div className="aspect-video bg-amber-900/25 overflow-hidden relative flex items-center justify-center group-hover:to-amber-600/15 transition">
+                      <div className="aspect-video bg-amber-950/40 overflow-hidden relative flex items-center justify-center">
                         {post.cover_image ? (
                           <img
                             src={post.cover_image}
                             alt={post.title}
-                            className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                            className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                           />
                         ) : (
                           <>
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-60" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60" />
                             <span className="text-amber-400/50 font-bold text-2xl relative z-10">📝</span>
                           </>
                         )}
@@ -223,26 +222,26 @@ export default function Index() {
                       {/* Content */}
                       <div className="p-5 flex flex-col flex-grow">
                         <div className="flex items-center justify-between gap-2 mb-3">
-                          <span className="inline-block bg-amber-500/20 px-3 py-1 text-xs font-semibold rounded border" style={{ borderColor: "var(--border-dark)", color: "var(--gold)" }}>
+                          <span className="inline-block bg-amber-500/15 text-amber-300 px-3 py-0.5 text-xs font-semibold rounded-full border border-amber-500/30">
                             {post.category}
                           </span>
-                          <span className="text-xs text-slate-500">{post.date}</span>
+                          <span className="text-xs text-amber-200/50">{post.date}</span>
                         </div>
 
-                        <h4 className="text-lg font-bold mb-2 leading-snug line-clamp-2 transition font-[Texturina]" style={{ color: "var(--gold-bright)" }}>
+                        <h4 className="text-lg font-bold mb-2 leading-snug line-clamp-2 transition font-zhoro text-amber-100 group-hover:text-amber-300">
                           {post.title}
                         </h4>
 
-                        <p className="text-slate-400 text-sm mb-4 line-clamp-2 flex-grow font-[Merriweather]" style={{ color: "var(--text-dark)" }}>
+                        <p className="text-amber-100/70 text-sm mb-4 line-clamp-2 flex-grow font-[Merriweather]">
                           {post.description}
                         </p>
 
                         {post.tags && post.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-3">
+                          <div className="flex flex-wrap gap-2 mb-4">
                             {post.tags.slice(0, 2).map((tag) => (
                               <span
                                 key={tag}
-                                className="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded"
+                                className="text-xs bg-amber-900/40 text-amber-300/80 px-2.5 py-0.5 rounded-full border border-amber-500/20"
                               >
                                 #{tag}
                               </span>
@@ -250,9 +249,9 @@ export default function Index() {
                           </div>
                         )}
 
-                        <div className="font-semibold text-sm group-hover:gap-2 gap-1 transition-all mt-auto flex items-center" style={{ color: "var(--gold)" }}>
+                        <div className="font-semibold text-sm text-amber-400 group-hover:text-amber-300 flex items-center gap-1 mt-auto pt-2 border-t border-amber-500/10">
                           Selengkapnya
-                          <svg className="w-4 h-4 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                           </svg>
                         </div>
@@ -267,83 +266,87 @@ export default function Index() {
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             {/* Search Box */}
-            <div className="bg-amber-900/25 rounded-lg p-6" style={{ borderColor: "var(--border-dark)", borderWidth: "1px" }}>
-              <h3 className="text-lg font-bold mb-4 font-zhoro" style={{ color: "var(--gold-bright)" }}>Cari Artikel</h3>
+            <div className="bg-amber-950/25 border border-amber-500/20 rounded-xl p-6 backdrop-blur-sm">
+              <h3 className="text-lg font-bold mb-4 font-zhoro text-amber-300">Cari Artikel</h3>
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Ketik kata kunci..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-amber-900/25 border text-white placeholder-slate-500 px-4 py-3 rounded-lg focus:outline-none transition font-[Merriweather]"
-                  style={{ borderColor: "var(--border-dark)", color: "var(--text-dark)" }}
+                  className="w-full bg-amber-950/40 border border-amber-500/30 text-amber-100 placeholder-amber-200/40 px-4 py-3 rounded-lg focus:outline-none focus:border-amber-400 transition font-[Merriweather]"
                 />
-                <svg className="absolute right-3 top-3 w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--gold)" }}>
+                <svg className="absolute right-3.5 top-3.5 w-5 h-5 text-amber-400 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
             </div>
 
             {/* Categories */}
-            <div className="bg-amber-900/25 rounded-lg p-6" style={{ borderColor: "var(--border-dark)", borderWidth: "1px" }}>
-              <h3 className="text-lg font-bold mb-4 font-zhoro" style={{ color: "var(--gold-bright)" }}>Kategori</h3>
+            <div className="bg-amber-950/25 border border-amber-500/20 rounded-xl p-6 backdrop-blur-sm">
+              <h3 className="text-lg font-bold mb-4 font-zhoro text-amber-300">Kategori</h3>
               <div className="space-y-2">
                 <button
                   onClick={() => setSelectedCategory(null)}
-                  className={`w-full text-left px-4 py-2 rounded transition font-[Merriweather] ${selectedCategory === null
-                    ? "bg-amber-600 text-white"
-                    : "text-slate-300 hover:bg-slate-700"
+                  className={`w-full text-left px-4 py-2.5 rounded-lg transition font-[Merriweather] text-sm font-semibold flex items-center justify-between ${selectedCategory === null
+                    ? "bg-amber-500 text-slate-950 shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+                    : "text-amber-200/80 hover:bg-amber-900/40 hover:text-amber-200"
                     }`}
                 >
-                  Semua
+                  <span>Semua Kategori</span>
+                  <span className={`text-xs px-2.5 py-0.5 rounded-full ${selectedCategory === null ? "bg-slate-900/30 text-slate-950" : "bg-amber-900/60 text-amber-300"}`}>
+                    {displayPosts.length}
+                  </span>
                 </button>
-                {allCategories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`w-full text-left px-4 py-2 rounded transition font-[Merriweather] flex items-center justify-between ${selectedCategory === cat
-                      ? "bg-amber-600 text-white"
-                      : "text-slate-300 hover:bg-slate-700"
-                      }`}
-                  >
-                    <span>{cat}</span>
-                    <span className="text-xs bg-slate-700 px-2 py-1 rounded">
-                      {displayPosts.filter((p) => p.category === cat).length}
-                    </span>
-                  </button>
-                ))}
+                {allCategories.map((cat) => {
+                  const count = displayPosts.filter((p) => p.category === cat).length;
+                  const isSelected = selectedCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`w-full text-left px-4 py-2.5 rounded-lg transition font-[Merriweather] text-sm font-semibold flex items-center justify-between ${isSelected
+                        ? "bg-amber-500 text-slate-950 shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+                        : "text-amber-200/80 hover:bg-amber-900/40 hover:text-amber-200"
+                        }`}
+                    >
+                      <span>{cat}</span>
+                      <span className={`text-xs px-2.5 py-0.5 rounded-full ${isSelected ? "bg-slate-900/30 text-slate-950" : "bg-amber-900/60 text-amber-300"}`}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Info Box */}
-            <div className="bg-gradient-to-br from-amber-900/20 to-amber-800/10 rounded-lg p-6" style={{ borderColor: "var(--border-dark)", borderWidth: "1px" }}>
-              <h3 className="text-lg font-bold mb-3 font-zhoro" style={{ color: "var(--gold)" }}>Tentang Blog</h3>
-              <p className="text-sm leading-relaxed font-[Merriweather] mb-4" style={{ color: "var(--text-dark)" }}>
+            <div className="bg-gradient-to-br from-amber-950/40 to-amber-900/15 border border-amber-500/20 rounded-xl p-6 backdrop-blur-sm">
+              <h3 className="text-lg font-bold mb-3 font-zhoro text-amber-300">Tentang Blog</h3>
+              <p className="text-sm leading-relaxed font-[Merriweather] mb-4 text-amber-100/75">
                 Blog ini adalah ruang berbagi untuk cerita, pengetahuan, dan pengalaman. Dibuat dengan penuh dedikasi untuk komunitas.
               </p>
               <Link
                 to="/jelajahi"
-                className="inline-block font-semibold text-sm transition"
-                style={{ color: "var(--gold)" }}
+                className="inline-flex items-center gap-1 font-semibold text-sm text-amber-400 hover:text-amber-300 transition"
               >
-                Jelajahi semua →
+                Jelajahi semua <span>→</span>
               </Link>
             </div>
 
             {/* Upcoming Section */}
-            <div className="bg-amber-900/20 rounded-lg p-6" style={{ borderColor: "var(--border-dark)", borderWidth: "1px" }}>
-              <h3 className="text-lg font-bold mb-4 font-zhoro" style={{ color: "var(--gold-bright)" }}>Terbaru</h3>
-              {displayPosts.slice(0, 3).map((post) => (
+            <div className="bg-amber-950/25 border border-amber-500/20 rounded-xl p-6 backdrop-blur-sm">
+              <h3 className="text-lg font-bold mb-4 font-zhoro text-amber-300">Terbaru</h3>
+              {displayPosts.slice(0, 3).map((post, i) => (
                 <Link
                   key={post.id}
                   to={`/post/${post.id}`}
-                  className="group block mb-4 pb-4 last:border-b-0 last:mb-0 last:pb-0 hover:transition"
-                  style={{ borderBottomColor: "var(--border-dark)", borderBottomWidth: post !== displayPosts.slice(0, 3).at(-1) ? "1px" : "0" }}
+                  className={`group block py-3 ${i !== 0 ? "border-t border-amber-500/15" : ""}`}
                 >
-                  <p className="text-sm font-semibold line-clamp-2 font-[Merriweather]" style={{ color: "var(--text-dark)" }}>
+                  <p className="text-sm font-semibold line-clamp-2 font-[Merriweather] text-amber-100/90 group-hover:text-amber-300 transition">
                     {post.title}
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">{post.date}</p>
+                  <p className="text-xs text-amber-200/50 mt-1">{post.date}</p>
                 </Link>
               ))}
             </div>

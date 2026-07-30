@@ -138,11 +138,11 @@ export default function Browse() {
             <button
               onClick={() => handleCategory("")}
               className={`px-4 py-2 rounded-full text-sm font-semibold transition ${selectedCategory === ""
-                ? "bg-amber-600 text-white"
-                : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                ? "bg-amber-500 text-slate-950 shadow-[0_0_15px_rgba(212,175,55,0.3)] font-bold"
+                : "bg-amber-950/40 text-amber-200/80 border border-amber-500/20 hover:bg-amber-900/40 hover:text-amber-200"
                 }`}
             >
-              Semua
+              Semua Kategori
             </button>
 
             {/* Category buttons */}
@@ -151,8 +151,8 @@ export default function Browse() {
                 key={category}
                 onClick={() => handleCategory(category)}
                 className={`px-4 py-2 rounded-full text-sm font-semibold transition ${selectedCategory === category
-                  ? "bg-amber-600 text-white"
-                  : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                  ? "bg-amber-500 text-slate-950 shadow-[0_0_15px_rgba(212,175,55,0.3)] font-bold"
+                  : "bg-amber-950/40 text-amber-200/80 border border-amber-500/20 hover:bg-amber-900/40 hover:text-amber-200"
                   }`}
               >
                 {category}
@@ -163,9 +163,9 @@ export default function Browse() {
 
         {/* Results Info */}
         <div className="mb-8">
-          <p className="text-slate-400 text-sm">
-            Menampilkan <span className="text-amber-400 font-semibold">{filteredPosts.length}</span> dari{" "}
-            <span className="text-amber-400 font-semibold">{posts.length}</span> artikel
+          <p className="text-amber-200/60 text-sm font-[Merriweather]">
+            Menampilkan <span className="text-amber-300 font-semibold">{filteredPosts.length}</span> dari{" "}
+            <span className="text-amber-300 font-semibold">{posts.length}</span> artikel
             {searchQuery && ` untuk "${searchQuery}"`}
             {selectedCategory && ` di kategori "${selectedCategory}"`}
           </p>
@@ -178,34 +178,34 @@ export default function Browse() {
               <Link
                 key={post.id}
                 to={`/post/${post.id}`}
-                className="group bg-amber-900/25 border border-amber-900/25 rounded-lg overflow-hidden hover:border-amber-500/50 hover:bg-amber-900/70 transition"
+                className="group bg-amber-950/20 border border-amber-500/20 rounded-xl overflow-hidden hover:border-amber-400/50 hover:bg-amber-900/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(212,175,55,0.12)] flex flex-col"
               >
                 {/* Image Placeholder */}
-                <div className="aspect-video bg-gradient-to-br from-amber-500/10 to-amber-600/10 flex items-center justify-center overflow-hidden relative group-hover:from-amber-500/20 group-hover:to-amber-600/20 transition">
+                <div className="aspect-video bg-amber-950/40 flex items-center justify-center overflow-hidden relative">
                   {post.cover_image ? (
-                    <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover" />
+                    <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                   ) : (
                     <>
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-60" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60" />
                       <span className="text-amber-400 font-bold text-lg relative z-10">Artikel</span>
                     </>
                   )}
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
+                <div className="p-6 flex flex-col flex-grow">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider font-zhoro">
+                    <span className="inline-block bg-amber-500/15 text-amber-300 px-3 py-0.5 text-xs font-semibold rounded-full border border-amber-500/30">
                       {post.category}
                     </span>
-                    <span className="text-xs text-white">{post.date}</span>
+                    <span className="text-xs text-amber-200/50">{post.date}</span>
                   </div>
 
-                  <h3 className="text-2xl font-black text-white mb-3 group-hover:text-amber-400 transition line-clamp-2 font-[Texturina] leading-tight tracking-tight">
+                  <h3 className="text-xl font-bold text-amber-100 mb-3 group-hover:text-amber-300 transition line-clamp-2 font-zhoro leading-snug">
                     {post.title}
                   </h3>
 
-                  <p className="text-white-400 text-md mb-4 line-clamp-2 font-[Merriweather]">
+                  <p className="text-amber-100/70 text-sm mb-4 line-clamp-2 font-[Merriweather] flex-grow">
                     {post.description}
                   </p>
 
@@ -214,19 +214,19 @@ export default function Browse() {
                       {post.tags.slice(0, 2).map((tag) => (
                         <span
                           key={tag}
-                          className="text-xs bg-amber-500/20 text-amber-400 px-2 py-1 rounded border border-amber-500/30"
+                          className="text-xs bg-amber-900/40 text-amber-300/80 px-2.5 py-0.5 rounded-full border border-amber-500/20"
                         >
                           #{tag}
                         </span>
                       ))}
                       {post.tags.length > 2 && (
-                        <span className="text-xs text-slate-500">+{post.tags.length - 2}</span>
+                        <span className="text-xs text-amber-200/40">+{post.tags.length - 2}</span>
                       )}
                     </div>
                   )}
 
-                  <div className="flex items-center text-amber-400 font-semibold text-sm group-hover:gap-2 gap-1 transition-all">
-                    Baca <span>→</span>
+                  <div className="flex items-center text-amber-400 font-semibold text-sm group-hover:text-amber-300 flex items-center gap-1 mt-auto pt-2 border-t border-amber-500/10">
+                    Baca Artikel <span className="group-hover:translate-x-1 transition-transform">→</span>
                   </div>
                 </div>
               </Link>
