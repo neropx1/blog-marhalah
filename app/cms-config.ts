@@ -1,11 +1,11 @@
 export const cmsConfig = {
+  load_config_file: false,
   backend: {
     name: "github" as const,
     repo: "neropx1/test-cms-decap",
     branch: "main",
+    base_url: "https://impervious-blog.netlify.app"
   },
-
-  publish_mode: "editorial_workflow" as const,
 
   media_folder: "cloudinary",
 
@@ -16,15 +16,7 @@ export const cmsConfig = {
     config: {
       cloud_name: "ymxgxfvy",
       api_key: "461626797611519",
-      api_secret: "tk2tkbCcaU7e1cFuemdGqdlVdw0",
     },
-  },
-
-  load_config_file: false,
-
-  // Supabase Authentication
-  auth: {
-    backend: "github" as const, // GitHub untuk commit
   },
 
   collections: [

@@ -5,7 +5,7 @@ import { getSession } from "~/utils/supabase.client";
 
 declare global {
   interface Window {
-    __decapCmsInitialized?: boolean;
+    __sveltiaCmsInitialized?: boolean;
     CMS_MANUAL_INIT?: boolean;
   }
 }
@@ -55,24 +55,20 @@ export default function Admin() {
       try {
         window.CMS_MANUAL_INIT = true;
 
-        const CMS = (await import("decap-cms-app")).default;
+        const { init } = await import("@sveltia/cms");
 
-        // Register media library Cloudinary
-        const cloudinary = (await import("decap-cms-media-library-cloudinary")).default;
-        CMS.registerMediaLibrary(cloudinary);
-
-        CMS.init({
+        init({
           config: cmsConfig,
         });
 
         if (isMounted) {
           initDoneRef.current = true;
-          window.__decapCmsInitialized = true;
-          console.log("Decap CMS initialized");
+          window.__sveltiaCmsInitialized = true;
+          console.log("Sveltia CMS initialized");
         }
       } catch (error) {
         if (isMounted) {
-          console.error("Decap CMS init gagal:", error);
+          console.error("Sveltia CMS init gagal:", error);
         }
       }
     };

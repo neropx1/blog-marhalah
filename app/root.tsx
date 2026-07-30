@@ -1,4 +1,4 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from "@remix-run/react";
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 // 1. Ambil URL dari file CSS yang baru dibuat tadi
 import stylesheet from "~/app.css?url";
@@ -52,6 +52,9 @@ const themeScript = `
 `;
 
 export default function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
   return (
     <html lang="id">
       <head>
@@ -62,7 +65,7 @@ export default function App() {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
-        <Navbar />
+        {!isAdminRoute && <Navbar />}
         <Outlet />
         <ScrollRestoration />
         <Scripts />
