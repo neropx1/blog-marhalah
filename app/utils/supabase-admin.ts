@@ -1,7 +1,17 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
-const supabaseServiceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || "";
+
+
+const supabaseUrl =
+  (typeof process !== 'undefined' ? process.env.VITE_SUPABASE_URL : null) ||
+  import.meta.env.VITE_SUPABASE_URL ||
+  "";
+
+const supabaseServiceKey =
+  (typeof process !== 'undefined' ? process.env.SUPABASE_SERVICE_ROLE_KEY : null) ||
+  import.meta.env.SUPABASE_SERVICE_ROLE_KEY ||
+  "";
+
 
 if (!supabaseUrl || !supabaseServiceKey) {
   console.warn(
