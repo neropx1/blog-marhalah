@@ -1,12 +1,27 @@
 import { vitePlugin as remix } from "@remix-run/dev";
-import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import { netlifyPlugin } from "@netlify/remix-adapter/plugin";
+import tailwindcss from "@tailwindcss/vite";
+import path from "path";
 
 export default defineConfig({
-  plugins: [remix(), tailwindcss(), netlifyPlugin()],
+  plugins: [tailwindcss(), remix(), netlifyPlugin()],
   resolve: {
-    tsconfigPaths: true,
+    alias: {
+      "~": path.resolve(__dirname, "./app"),
+    },
   },
   publicDir: "public",
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          remix: ['@remix-run/react', '@remix-run/node'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+    cssCodeSplit: true,
+  },
 });

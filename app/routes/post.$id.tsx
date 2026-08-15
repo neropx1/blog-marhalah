@@ -1,22 +1,22 @@
-import { json, type LoaderFunction } from "@remix-run/node";
+import { json, type LoaderFunction, type MetaFunction } from "@remix-run/node";
 import { useLoaderData, Link } from "@remix-run/react";
-import { fetchPostsFromGithub, type CoverImageItem } from "~/utils/github-posts";
+import { fetchPostsFromGithub, type CoverImageItem } from "../utils/github-posts";
 import ReactMarkdown, { type Components } from "react-markdown";
 import rehypeRaw from "rehype-raw";
-import Footer from "~/components/Footer";
-import { useState, useRef, useMemo } from "react";
+import Footer from "../components/Footer";
+import LazyImage from "../components/LazyImage";
+import CoverImageSlider from "../components/CoverImageSlider";
+import { useState, useMemo, useRef } from "react";
 
 // Helper membagi artikel panjang ke dalam beberapa halaman
 function paginateMarkdown(content: string, paragraphsPerPage = 6): string[] {
   if (!content) return [""];
 
-  // 1. Jika file markdown menggunakan tag pemisah manual `<!-- pagebreak -->`
   if (/<!--\s*pagebreak\s*-->/i.test(content)) {
     const manualPages = content.split(/<!--\s*pagebreak\s*-->/i).filter((p) => p.trim().length > 0);
     if (manualPages.length > 0) return manualPages;
   }
 
-  // 2. Bagi otomatis berdasarkan paragraf / blok baris ganda jika terlalu panjang
   const blocks = content.split(/\r?\n\s*\r?\n/);
   
   if (blocks.length <= paragraphsPerPage) {
@@ -30,26 +30,6 @@ function paginateMarkdown(content: string, paragraphsPerPage = 6): string[] {
   return pages;
 }
 
-export const loader: LoaderFunction = async ({ params }) => {
-  const posts = await fetchPostsFromGithub();
-  const post = posts.find((p: any) => p.id === params.id);
-
-  if (!post) {
-    throw new Response("Post not found", { status: 404 });
-  }
-
-  // Rekomendasi artikel: ambil post lain (maksimal 4)
-  const otherPosts = posts.filter((p: any) => p.id !== params.id);
-  
-  // Utamakan post dengan kategori yang sama
-  const sameCategory = otherPosts.filter((p: any) => p.category === post.category);
-  const diffCategory = otherPosts.filter((p: any) => p.category !== post.category);
-
-  const relatedPosts = [...sameCategory, ...diffCategory].slice(0, 4);
-
-  return json({ post, relatedPosts });
-};
-
 interface Post {
   id: string;
   title: string;
@@ -58,6 +38,8 @@ interface Post {
   category: string;
   date: string;
   author: string;
+  photographer?: string;
+  editor?: string;
   body: string;
   tags: string[];
   cover_image?: string;
@@ -68,6 +50,48 @@ interface LoaderData {
   post: Post;
   relatedPosts: Post[];
 }
+
+export const loader: LoaderFunction = async ({ params }) => {
+  const posts = await fetchPostsFromGithub();
+  const post = posts.find((p: any) => p.id === params.id);
+
+  if (!post) {
+    throw new Response("Post not found", { status: 404 });
+  }
+
+  const otherPosts = posts.filter((p: any) => p.id !== params.id);
+  const sameCategory = otherPosts.filter((p: any) => p.category === post.category);
+  const diffCategory = otherPosts.filter((p: any) => p.category !== post.category);
+
+  const relatedPosts = [...sameCategory, ...diffCategory].slice(0, 4);
+
+  return json({ post, relatedPosts });
+};
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  if (!data) {
+    return [{ title: "Post — Impervious Generation" }];
+  }
+  
+  const { post } = data;
+  return [
+    { title: `${post.title} — Impervious Generation` },
+    { name: "description", content: post.description || post.excerpt },
+    { name: "keywords", content: post.tags?.join(", ") || post.category },
+    { name: "author", content: post.author },
+    { property: "og:title", content: post.title },
+    { property: "og:description", content: post.description || post.excerpt },
+    { property: "og:type", content: "article" },
+    { property: "og:image", content: post.cover_image || "" },
+    { property: "article:author", content: post.author },
+    { property: "article:published_time", content: post.date },
+    { property: "article:section", content: post.category },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: post.title },
+    { name: "twitter:description", content: post.description || post.excerpt },
+    { name: "twitter:image", content: post.cover_image || "" },
+  ];
+};
 
 // Custom components for markdown rendering (termasuk deskripsi foto / figcaption)
 const MarkdownComponents: Components = {
@@ -103,16 +127,16 @@ const MarkdownComponents: Components = {
     <em className="italic text-amber-100">{children}</em>
   ),
   ul: ({ children }) => (
-    <ul className="list-disc list-inside space-y-2 mb-4 font-[Merriweather]">{children}</ul>
+    <ul className="list-disc list-inside space-y-2 mb-4 font-[Bricolage_Grotesque]">{children}</ul>
   ),
   ol: ({ children }) => (
-    <ol className="list-decimal list-inside space-y-2 mb-4 font-[Merriweather]">{children}</ol>
+    <ol className="list-decimal list-inside space-y-2 mb-4 font-[Bricolage_Grotesque]">{children}</ol>
   ),
   li: ({ children }) => (
     <li className="text-slate-300">{children}</li>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="border-l-4 border-amber-500 pl-6 italic text-slate-300 my-4 font-[Merriweather]">
+    <blockquote className="border-l-4 border-amber-500 pl-6 italic text-slate-300 my-4 font-[Bricolage_Grotesque]">
       {children}
     </blockquote>
   ),
@@ -128,9 +152,13 @@ const MarkdownComponents: Components = {
   ),
   img: (props) => (
     <figure className="my-8">
-      <img src={props.src} alt={props.alt || ""} className="w-full rounded-xl shadow-xl border border-slate-800" />
+      <LazyImage 
+        src={props.src || ""} 
+        alt={props.alt || ""} 
+        className="w-full rounded-xl shadow-xl border border-slate-800" 
+      />
       {props.alt && props.alt.trim() !== "" && (
-        <figcaption className="text-center text-xs md:text-sm text-slate-400 mt-3 font-[Merriweather] italic flex items-center justify-center gap-2">
+        <figcaption className="text-center text-xs md:text-sm text-slate-400 mt-3 font-[Bricolage_Grotesque] italic flex items-center justify-center gap-2">
           <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
@@ -141,171 +169,9 @@ const MarkdownComponents: Components = {
   ),
 };
 
-// Component Slider Cover Image (Mendukung Deskripsi per Foto)
-function CoverImageSlider({ images, title }: { images: (string | CoverImageItem)[]; title: string }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const touchStartX = useRef<number | null>(null);
-  const touchEndX = useRef<number | null>(null);
-
-  // Normalize array to CoverImageItem[]
-  const imageItems: CoverImageItem[] = (images || []).map((img) =>
-    typeof img === "string" ? { url: img } : img
-  );
-
-  if (!imageItems || imageItems.length === 0) return null;
-
-  const currentItem = imageItems[currentIndex] || imageItems[0];
-
-  if (imageItems.length === 1) {
-    return (
-      <div className="mb-8 rounded-xl overflow-hidden shadow-2xl border border-amber-500/30 bg-slate-950">
-        <img src={currentItem.url} alt={title} className="w-full h-auto max-h-[550px] object-cover" />
-        {currentItem.caption && (
-          <div className="bg-slate-900/90 border-t border-amber-500/20 px-5 py-3 text-slate-200 text-sm font-[Merriweather] flex items-center gap-3">
-            <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span className="leading-snug">{currentItem.caption}</span>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev === 0 ? imageItems.length - 1 : prev - 1));
-  };
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev === imageItems.length - 1 ? 0 : prev + 1));
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStartX.current || !touchEndX.current) return;
-    const distance = touchStartX.current - touchEndX.current;
-    const isSwipeLeft = distance > 40;
-    const isSwipeRight = distance < -40;
-
-    if (isSwipeLeft) {
-      nextSlide();
-    } else if (isSwipeRight) {
-      prevSlide();
-    }
-
-    touchStartX.current = null;
-    touchEndX.current = null;
-  };
-
-  return (
-    <div className="mb-8 relative group">
-      {/* Slider Container */}
-      <div
-        className={`overflow-hidden shadow-2xl border border-amber-500/30 relative bg-slate-950 aspect-[16/9] md:aspect-[21/9] ${
-          currentItem.caption ? "rounded-t-xl" : "rounded-xl"
-        }`}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div
-          className="flex h-full transition-transform duration-500 ease-out"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-        >
-          {imageItems.map((img, idx) => (
-            <div key={idx} className="w-full h-full flex-shrink-0 relative">
-              <img
-                src={img.url}
-                alt={`${title} - Gambar ${idx + 1}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ))}
-        </div>
-
-        {/* Counter Badge */}
-        <div className="absolute top-4 right-4 bg-slate-900/80 backdrop-blur-md text-amber-400 text-xs px-3 py-1.5 rounded-full border border-amber-500/30 font-mono z-10">
-          {currentIndex + 1} / {imageItems.length}
-        </div>
-
-        {/* Navigation Buttons */}
-        <button
-          onClick={prevSlide}
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-slate-900/80 border border-amber-500/30 text-amber-400 flex items-center justify-center hover:bg-amber-500 hover:text-slate-950 transition z-10 opacity-80 hover:opacity-100 shadow-lg"
-          aria-label="Gambar Sebelumnya"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <button
-          onClick={nextSlide}
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-slate-900/80 border border-amber-500/30 text-amber-400 flex items-center justify-center hover:bg-amber-500 hover:text-slate-950 transition z-10 opacity-80 hover:opacity-100 shadow-lg"
-          aria-label="Gambar Selanjutnya"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-
-        {/* Dots Navigation */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10 bg-slate-900/70 backdrop-blur-sm px-3 py-1.5 rounded-full border border-slate-800">
-          {imageItems.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentIndex(idx)}
-              className={`h-2 rounded-full transition-all ${
-                currentIndex === idx ? "w-6 bg-amber-400" : "w-2 bg-slate-500 hover:bg-slate-300"
-              }`}
-              aria-label={`Ke gambar ${idx + 1}`}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Caption Bar (Deskripsi Foto) */}
-      {currentItem.caption && (
-        <div className="bg-slate-900/95 backdrop-blur-md border-x border-b border-amber-500/30 px-5 py-3 rounded-b-xl text-slate-200 text-sm font-[Merriweather] flex items-center gap-3">
-          <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span className="leading-snug">{currentItem.caption}</span>
-        </div>
-      )}
-
-      {/* Thumbnail Selector Strip */}
-      <div className="flex gap-3 mt-3 overflow-x-auto pb-2 scrollbar-thin">
-        {imageItems.map((img, idx) => (
-          <button
-            key={idx}
-            onClick={() => setCurrentIndex(idx)}
-            className={`relative rounded-lg overflow-hidden h-16 w-24 flex-shrink-0 border-2 transition ${
-              currentIndex === idx
-                ? "border-amber-400 ring-2 ring-amber-400/50 opacity-100 scale-105"
-                : "border-slate-800 opacity-60 hover:opacity-100"
-            }`}
-          >
-            <img src={img.url} alt="" className="w-full h-full object-cover" />
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function PostDetail() {
   const { post, relatedPosts } = useLoaderData<LoaderData>();
 
-  // Pagination artikel
   const contentPages = useMemo(() => paginateMarkdown(post.body, 6), [post.body]);
   const [currentPage, setCurrentPage] = useState(1);
   const articleTopRef = useRef<HTMLDivElement>(null);
@@ -318,7 +184,6 @@ export default function PostDetail() {
     }
   };
 
-  // Determine cover images available
   const coverImages =
     post.cover_images && post.cover_images.length > 0
       ? post.cover_images
@@ -326,7 +191,6 @@ export default function PostDetail() {
       ? [post.cover_image]
       : [];
 
-  // Generate share URLs
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
   const shareTitle = encodeURIComponent(post.title);
 
@@ -338,32 +202,49 @@ export default function PostDetail() {
   };
 
   return (
-    <main className="min-h-screen">
-      <article className="mx-auto max-w-4xl px-6 py-8 lg:px-8">
-        {/* Multi Cover Image Slider with Captions */}
+    <main className="min-h-screen gradient-wave">
+      <article className="mx-auto max-w-4xl px-6 py-8 lg:px-8 relative z-10">
         <CoverImageSlider images={coverImages} title={post.title} />
 
         {/* Header */}
-        <header ref={articleTopRef} className="mb-10 scroll-mt-10">
+        <header ref={articleTopRef} className="liquid-card p-8 mb-10 scroll-mt-10">
           <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
             <span className="inline-block bg-amber-500/20 text-amber-400 px-4 py-2 text-sm font-semibold rounded-full border border-amber-500/30">
               {post.category}
             </span>
-            <time className="text-sm text-slate-400 font-[Merriweather]">{post.date}</time>
+            <time className="text-sm text-amber-200/60 font-[Bricolage_Grotesque]">{post.date}</time>
           </div>
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight font-zhoro">{post.title}</h1>
-          <p className="text-lg md:text-xl text-amber-100/80 mb-6 font-[Merriweather]">{post.description}</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-amber-200 mb-6 leading-tight font-[Bricolage_Grotesque]">{post.title}</h1>
+          <p className="text-base md:text-lg text-amber-100/80 mb-6 font-[Bricolage_Grotesque]">{post.description}</p>
           <div className="flex items-center gap-6 border-t border-amber-500/20 pt-6 flex-wrap">
             <div>
-              <p className="text-sm text-amber-200/50 mb-1">Ditulis oleh</p>
-              <p className="font-semibold text-amber-300 font-[Merriweather]">{post.author}</p>
+              <p className="text-xs text-amber-200/50 mb-1 uppercase tracking-widest">Ditulis oleh</p>
+              <p className="text-lg font-semibold text-amber-300 font-[Bricolage_Grotesque]">{post.author}</p>
+              {post.photographer && (
+                <div className="mt-2">
+                  <p className="text-sm text-amber-200/50 mb-1 flex items-center">
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h18M3 12h18M3 17h18" /></svg>
+                    Fotografer
+                  </p>
+                  <p className="font-semibold text-amber-300 font-[Bricolage_Grotesque]">{post.photographer}</p>
+                </div>
+              )}
+              {post.editor && (
+                <div className="mt-2">
+                  <p className="text-sm text-amber-200/50 mb-1 flex items-center">
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 20h9" /></svg>
+                    Editor
+                  </p>
+                  <p className="font-semibold text-amber-300 font-[Bricolage_Grotesque]">{post.editor}</p>
+                </div>
+              )}
             </div>
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag: string) => (
                   <span
                     key={tag}
-                    className="bg-amber-500/15 text-amber-300 px-3 py-1 text-sm rounded-full border border-amber-500/30 font-[Merriweather]"
+                    className="bg-amber-500/15 text-amber-300 px-3 py-1 text-sm rounded-full border border-amber-500/30 font-[Bricolage_Grotesque]"
                   >
                     #{tag}
                   </span>
@@ -374,7 +255,7 @@ export default function PostDetail() {
         </header>
 
         {/* Content */}
-        <div className="mb-10">
+        <div className="border border-amber-500/30 border-dashed p-4 rounded-2xl mb-10">
           <div className="prose prose-invert max-w-none">
             <ReactMarkdown components={MarkdownComponents} rehypePlugins={[rehypeRaw]}>
               {contentPages[currentPage - 1] || ""}
@@ -384,8 +265,8 @@ export default function PostDetail() {
 
         {/* Article Content Pagination (tampil jika artikel memiliki > 1 halaman) */}
         {contentPages.length > 1 && (
-          <div className="my-10 p-5 bg-amber-950/30 border border-amber-500/30 rounded-2xl backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_0_20px_rgba(212,175,55,0.1)]">
-            <div className="text-sm font-[Merriweather] text-amber-200/80">
+          <div className="liquid-card p-6 my-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-sm font-[Bricolage_Grotesque] text-amber-200/80">
               Halaman <span className="font-bold text-amber-400">{currentPage}</span> dari{" "}
               <span className="font-bold text-amber-400">{contentPages.length}</span>
             </div>
@@ -394,9 +275,9 @@ export default function PostDetail() {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-4 py-2 rounded-lg border border-amber-500/30 text-amber-300 text-sm font-semibold transition hover:bg-amber-500/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="liquid-btn btn-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                ← Sebelumnya
+                ←
               </button>
 
               <div className="flex items-center gap-1.5">
@@ -409,8 +290,8 @@ export default function PostDetail() {
                       onClick={() => handlePageChange(pageNum)}
                       className={`w-9 h-9 rounded-lg text-sm font-bold transition flex items-center justify-center ${
                         isActive
-                          ? "bg-amber-500 text-slate-950 shadow-[0_0_12px_rgba(212,175,55,0.4)]"
-                          : "bg-amber-950/40 text-amber-300 border border-amber-500/20 hover:bg-amber-900/50"
+                          ? "liquid-btn"
+                          : "glass-input text-amber-300 hover:bg-amber-900/50"
                       }`}
                     >
                       {pageNum}
@@ -422,36 +303,36 @@ export default function PostDetail() {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === contentPages.length}
-                className="px-4 py-2 rounded-lg border border-amber-500/30 text-amber-300 text-sm font-semibold transition hover:bg-amber-500/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="liquid-btn btn-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Selanjutnya →
+               →
               </button>
             </div>
           </div>
         )}
 
-        {/* Divider */}
-        <div className="border-t border-slate-800 my-12" />
-
         {/* Author & Share */}
         <div className="grid gap-8 sm:grid-cols-2 mb-16">
-          <div className="bg-slate-900/50 border border-slate-800/50 rounded-lg p-8">
-            <h4 className="font-semibold text-amber-400 mb-4 font-zhoro">Tentang Penulis</h4>
-            <p className="text-slate-300 font-[Merriweather]">{post.author}</p>
+          <div className="liquid-card p-8">
+            <h4 className="font-semibold text-amber-400 font-[Bricolage_Grotesque]">Penulis</h4>
+            <p className="text-amber-100/80 font-[Bricolage_Grotesque] mb-4">{post.author}</p>
+            <h4 className="font-semibold text-amber-400 font-[Bricolage_Grotesque]">Editor</h4>
+            <p className="text-amber-100/80 font-[Bricolage_Grotesque] mb-4">{post.photographer}</p>
+            <p className="text-amber-100/80 font-[Bricolage_Grotesque] mb-4">{post.editor}</p>
           </div>
-          <div className="bg-amber-500/5 border border-amber-500/30 rounded-lg p-8">
-            <h4 className="font-semibold text-amber-400 mb-4 font-zhoro">Bagikan Artikel</h4>
+          <div className="liquid-card p-8">
+            <h4 className="font-semibold text-amber-400 mb-4 font-[Bricolage_Grotesque]">Bagikan Artikel</h4>
             <div className="flex gap-3">
-              <a href={shareLinks.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-amber-600/50 transition text-amber-400 hover:text-white" title="Bagikan ke Twitter">
+              <a href={shareLinks.twitter} target="_blank" rel="noopener noreferrer" className="liquid-btn w-10 h-10 flex items-center justify-center rounded-lg text-amber-400 hover:text-white transition" title="Bagikan ke Twitter">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75 2.25 7-7 7-7" /></svg>
               </a>
-              <a href={shareLinks.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-amber-600/50 transition text-amber-400 hover:text-white" title="Bagikan ke Facebook">
+              <a href={shareLinks.facebook} target="_blank" rel="noopener noreferrer" className="liquid-btn w-10 h-10 flex items-center justify-center rounded-lg text-amber-400 hover:text-white transition" title="Bagikan ke Facebook">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a6 6 0 00-6 6v3H7v4h2v8h4v-8h3l1-4h-4V8a2 2 0 012-2h3z" /></svg>
               </a>
-              <a href={shareLinks.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-amber-600/50 transition text-amber-400 hover:text-white" title="Bagikan ke LinkedIn">
+              <a href={shareLinks.linkedin} target="_blank" rel="noopener noreferrer" className="liquid-btn w-10 h-10 flex items-center justify-center rounded-lg text-amber-400 hover:text-white transition" title="Bagikan ke LinkedIn">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" /><circle cx="4" cy="4" r="2" /></svg>
               </a>
-              <a href={shareLinks.whatsapp} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-amber-600/50 transition text-amber-400 hover:text-white" title="Bagikan ke WhatsApp">
+              <a href={shareLinks.whatsapp} target="_blank" rel="noopener noreferrer" className="liquid-btn w-10 h-10 flex items-center justify-center rounded-lg text-amber-400 hover:text-white transition" title="Bagikan ke WhatsApp">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.6 6.32c-1.63-1.62-3.8-2.52-6.11-2.52-4.76 0-8.63 3.87-8.63 8.63 0 1.52.39 3.01 1.14 4.33L2 22l4.6-1.2c1.27.73 2.71 1.12 4.17 1.12 4.76 0 8.63-3.87 8.63-8.63 0-2.31-.9-4.48-2.54-6.12M11.49 19.73c-1.28 0-2.54-.32-3.66-.94l-.26-.16-2.71.71.72-2.66-.17-.28c-.7-1.12-1.07-2.41-1.07-3.73 0-3.96 3.22-7.18 7.18-7.18 1.92 0 3.72.75 5.08 2.1 1.36 1.35 2.11 3.15 2.11 5.08 0 3.96-3.22 7.18-7.18 7.18m3.91-5.38c-.21-.11-1.27-.62-1.47-.69-.21-.08-.36-.11-.51.11-.16.21-.61.77-.75.92-.13.15-.27.17-.48.05-1.16-.58-1.92-.98-2.68-2.16-.2-.32.21-.3.58-.99.07-.14.04-.27-.02-.38-.06-.11-.51-1.23-.7-1.68-.18-.44-.37-.38-.51-.38-.13 0-.28 0-.42 0-.14 0-.37.05-.56.27-.2.21-.74.72-.74 1.76 0 1.04.76 2.04.86 2.18.11.14 1.55 2.36 3.74 3.31 1.02.45 1.81.72 2.43.93.52.18 1.01.15 1.39-.09.33-.22.68-.6.85-1.14.17-.54.17-1.01.12-1.11-.06-.11-.2-.16-.42-.27z" /></svg>
               </a>
             </div>
@@ -463,7 +344,7 @@ export default function PostDetail() {
       <section className="mx-auto max-w-4xl px-6 py-12 lg:px-8 border-t border-slate-800">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-          <h2 className="text-2xl font-bold text-white font-zhoro">Artikel Rekomendasi</h2>
+          <h2 className="text-2xl font-bold text-white font-[Bricolage_Grotesque]">Artikel Rekomendasi</h2>
         </div>
 
         {relatedPosts && relatedPosts.length > 0 ? (
@@ -472,12 +353,12 @@ export default function PostDetail() {
               <Link
                 key={relPost.id}
                 to={`/post/${relPost.id}`}
-                className="group bg-slate-900/50 border border-slate-800/50 rounded-xl overflow-hidden hover:border-amber-500/50 hover:bg-slate-900/80 transition duration-300 flex flex-col justify-between"
+                className="group liquid-card rounded-xl overflow-hidden transition duration-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="aspect-video bg-gradient-to-br from-amber-500/10 to-amber-600/10 flex items-center justify-center overflow-hidden relative">
                     {relPost.cover_image ? (
-                      <img
+                      <LazyImage
                         src={relPost.cover_image}
                         alt={relPost.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
@@ -487,17 +368,17 @@ export default function PostDetail() {
                         <span className="text-3xl">📰</span>
                       </div>
                     )}
-                    <span className="absolute top-3 left-3 bg-amber-500/20 text-amber-400 text-xs px-3 py-1 rounded-full border border-amber-500/30 backdrop-blur-md font-[Merriweather]">
+                    <span className="absolute top-3 left-3 bg-amber-500/20 text-amber-400 text-xs px-3 py-1 rounded-full border border-amber-500/30 backdrop-blur-md font-[Bricolage_Grotesque]">
                       {relPost.category}
                     </span>
                   </div>
 
                   <div className="p-6">
-                    <p className="text-xs text-slate-400 font-[Merriweather] mb-2">{relPost.date}</p>
+                    <p className="text-xs text-slate-400 font-[Bricolage_Grotesque] mb-2">{relPost.date}</p>
                     <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition font-[Texturina] line-clamp-2 leading-snug">
                       {relPost.title}
                     </h3>
-                    <p className="mt-2 text-sm text-slate-300 font-[Merriweather] line-clamp-2">
+                    <p className="mt-2 text-sm text-slate-300 font-[Bricolage_Grotesque] line-clamp-2">
                       {relPost.description}
                     </p>
                   </div>
@@ -516,11 +397,11 @@ export default function PostDetail() {
           <div className="grid gap-6 sm:grid-cols-2">
             <Link
               to="/"
-              className="group bg-slate-900/50 border border-slate-800/50 rounded-lg overflow-hidden hover:border-amber-500/50 hover:bg-slate-900/70 transition p-6"
+              className="group glass-card rounded-lg overflow-hidden transition p-6 liquid-shine"
             >
               <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2">Lihat Lebih</p>
-              <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition font-zhoro">Kembali ke Halaman Utama</h3>
-              <p className="mt-2 text-sm text-slate-400 font-[Merriweather]">Lihat semua artikel dan rekomendasi lainnya</p>
+              <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition font-[Bricolage_Grotesque]">Kembali ke Halaman Utama</h3>
+              <p className="mt-2 text-sm text-amber-100/70 font-[Bricolage_Grotesque]">Lihat semua artikel dan rekomendasi lainnya</p>
             </Link>
           </div>
         )}

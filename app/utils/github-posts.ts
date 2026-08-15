@@ -3,16 +3,13 @@ export interface CoverImageItem {
   caption?: string;
 }
 
-// ======================
-// Cache sederhana (in-memory)
-// ======================
 type CacheEntry<T> = {
   data: T;
   etag?: string | null;
   time: number;
 };
 
-const CACHE_TTL = 2 * 60 * 1000; // 2 menit
+const CACHE_TTL = 5 * 60 * 1000; // 5 menit
 
 let commitCache: CacheEntry<string> | null = null;
 let postsCache: CacheEntry<any[]> | null = null;
@@ -108,11 +105,16 @@ async function getLatestCommitSha(
 
   const url = `https://api.github.com/repos/${owner}/${repo}/commits/${branch}`;
 
-  const headers: HeadersInit = {
+  const token = typeof process !== 'undefined' && process.env?.GITHUB_PAT
+    ? process.env.GITHUB_PAT
+    : import.meta?.env?.GITHUB_PAT;
+
+  const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
-    // Include GitHub PAT if provided to increase rate limits
-    ...(process.env.GITHUB_PAT ? { Authorization: `token ${process.env.GITHUB_PAT}` } : {}),
+    ...(token ? { Authorization: `token ${token}` } : {}),
   };
+
+  console.log("Headers:", headers);
 
   if (commitCache?.etag) {
     headers["If-None-Match"] = commitCache.etag;

@@ -1,12 +1,18 @@
 import { json, type LoaderFunction, type ActionFunction, redirect } from "@remix-run/node";
 import { useLoaderData, useFetcher, Form } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { getAllUsers, deleteUser, updateUserRole, generateInviteCode, getInviteCodes, type User } from "~/utils/supabase-admin";
+import { getAllUsers, deleteUser, updateUserRole, generateInviteCode, getInviteCodes, type User } from "../utils/supabase-admin";
 
 interface LoaderData {
   users: User[];
   inviteCodes: any[];
   adminEmail: string;
+}
+
+interface FetcherData {
+  success?: boolean;
+  message?: string;
+  error?: string;
 }
 
 /**
@@ -81,10 +87,11 @@ export default function AdminPanel() {
   const [newInviteCode, setNewInviteCode] = useState<string>("");
 
   useEffect(() => {
-    if (fetcher.data?.message) {
+    const data = fetcher.data as FetcherData | undefined;
+    if (data?.message) {
       setNotification({
-        type: fetcher.data?.success ? "success" : "error",
-        message: fetcher.data.message || fetcher.data.error,
+        type: data?.success ? "success" : "error",
+        message: data.message || data.error || "Unknown error",
       });
       setTimeout(() => setNotification(null), 3000);
     }
@@ -105,15 +112,15 @@ export default function AdminPanel() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen gradient-wave">
       {/* Admin Panel Container */}
-      <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-white mb-2 font-zhoro">
+        <div className="liquid-card p-8 mb-12">
+          <h1 className="text-4xl font-bold text-amber-200 mb-2 font-[Bricolage_Grotesque]">
             Admin Panel
           </h1>
-          <p className="text-slate-400 font-[Merriweather]">
+          <p className="text-amber-100/70 font-[Bricolage_Grotesque]">
             Kelola pengguna dan kode undangan
           </p>
         </div>
@@ -121,10 +128,10 @@ export default function AdminPanel() {
         {/* Notification */}
         {notification && (
           <div
-            className={`mb-6 p-4 rounded-lg border ${
+            className={`mb-6 p-4 rounded-lg liquid-card ${
               notification.type === "success"
-                ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
-                : "bg-red-500/20 border-red-500/50 text-red-400"
+                ? "text-emerald-400 border-emerald-500/30"
+                : "text-red-400 border-red-500/30"
             }`}
           >
             {notification.message}
@@ -136,30 +143,30 @@ export default function AdminPanel() {
           <div className="lg:col-span-1">
             <div className="space-y-4">
               {/* Generate Invite Code Card */}
-              <div className="bg-slate-900 border border-amber-500/30 rounded-lg p-6">
-                <h3 className="text-lg font-bold text-white mb-4 font-zhoro">
+              <div className="liquid-card p-6">
+                <h3 className="text-lg font-bold text-amber-300 mb-4 font-[Bricolage_Grotesque]">
                   Buat Kode Undangan
                 </h3>
-                <p className="text-sm text-slate-400 mb-4 font-[Merriweather]">
+                <p className="text-sm text-amber-100/70 mb-4 font-[Bricolage_Grotesque]">
                   Buat kode undangan baru untuk pengguna editor
                 </p>
                 <button
                   onClick={handleGenerateCode}
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded transition"
+                  className="w-full liquid-btn"
                 >
                   Generate Kode
                 </button>
 
                 {newInviteCode && (
-                  <div className="mt-4 p-3 bg-slate-800 rounded border border-amber-400/30">
-                    <p className="text-xs text-slate-400 mb-2">Kode Baru:</p>
+                  <div className="mt-4 p-3 glass-input rounded border border-amber-400/30">
+                    <p className="text-xs text-amber-200/50 mb-2">Kode Baru:</p>
                     <div className="flex items-center gap-2">
                       <code className="flex-1 text-amber-400 font-mono text-sm break-all">
                         {newInviteCode}
                       </code>
                       <button
                         onClick={() => handleCopyCode(newInviteCode)}
-                        className="p-2 hover:bg-slate-700 rounded transition"
+                        className="p-2 hover:bg-amber-900/30 rounded transition liquid-btn btn-sm"
                       >
                         <svg
                           className="w-4 h-4 text-amber-400"
@@ -181,25 +188,25 @@ export default function AdminPanel() {
               </div>
 
               {/* Stats */}
-              <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-                <h3 className="text-lg font-bold text-white mb-4 font-zhoro">
+              <div className="liquid-card p-6">
+                <h3 className="text-lg font-bold text-amber-300 mb-4 font-[Bricolage_Grotesque]">
                   Statistik
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-400">Total Pengguna</span>
+                    <span className="text-amber-100/70">Total Pengguna</span>
                     <span className="text-2xl font-bold text-amber-400">
                       {users.length}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-400">Admin</span>
+                    <span className="text-amber-100/70">Admin</span>
                     <span className="text-lg font-semibold text-amber-400">
                       {users.filter((u) => u.role === "admin").length}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-400">Editor</span>
+                    <span className="text-amber-100/70">Editor</span>
                     <span className="text-lg font-semibold text-amber-400">
                       {users.filter((u) => u.role === "editor").length}
                     </span>
@@ -212,9 +219,9 @@ export default function AdminPanel() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Users Table */}
-            <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
-              <div className="p-6 border-b border-slate-800">
-                <h2 className="text-2xl font-bold text-white font-zhoro">
+            <div className="liquid-card overflow-hidden">
+              <div className="p-6 border-b border-amber-500/20">
+                <h2 className="text-2xl font-bold text-amber-300 font-[Bricolage_Grotesque]">
                   Daftar Pengguna
                 </h2>
               </div>
@@ -223,25 +230,25 @@ export default function AdminPanel() {
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="bg-slate-800/50 border-b border-slate-800">
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                      <tr className="bg-amber-900/20 border-b border-amber-500/20">
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-amber-200">
                           Email
                         </th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-amber-200">
                           Role
                         </th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-amber-200">
                           Terdaftar
                         </th>
-                        <th className="px-6 py-4 text-right text-sm font-semibold text-slate-300">
+                        <th className="px-6 py-4 text-right text-sm font-semibold text-amber-200">
                           Aksi
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800">
+                    <tbody className="divide-y divide-amber-500/15">
                       {users.map((user) => (
-                        <tr key={user.id} className="hover:bg-slate-800/50 transition">
-                          <td className="px-6 py-4 text-sm text-slate-300">
+                        <tr key={user.id} className="hover:bg-amber-900/20 transition">
+                          <td className="px-6 py-4 text-sm text-amber-100">
                             {user.email}
                           </td>
                           <td className="px-6 py-4 text-sm">
@@ -255,7 +262,7 @@ export default function AdminPanel() {
                               {user.role === "admin" ? "👑 Admin" : "✏️ Editor"}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-sm text-slate-400">
+                          <td className="px-6 py-4 text-sm text-amber-200/60">
                             {new Date(user.createdAt).toLocaleDateString("id-ID")}
                           </td>
                           <td className="px-6 py-4 text-right">
@@ -280,7 +287,7 @@ export default function AdminPanel() {
                                       }
                                     }
                                   }}
-                                  className="px-2 py-1 rounded text-xs bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600 focus:outline-none focus:border-amber-400"
+                                  className="px-2 py-1 rounded text-xs glass-input text-amber-100 border-amber-500/20"
                                 >
                                   <option value="admin">Admin</option>
                                   <option value="editor">Editor</option>
@@ -306,7 +313,7 @@ export default function AdminPanel() {
                                       document.body.removeChild(form);
                                     }
                                   }}
-                                  className="px-2 py-1 rounded text-xs bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 transition"
+                                  className="px-2 py-1 rounded text-xs bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 transition liquid-btn btn-sm"
                                 >
                                   Hapus
                                 </button>
@@ -320,15 +327,15 @@ export default function AdminPanel() {
                 </div>
               ) : (
                 <div className="p-12 text-center">
-                  <p className="text-slate-400">Belum ada pengguna terdaftar</p>
+                  <p className="text-amber-100/60">Belum ada pengguna terdaftar</p>
                 </div>
               )}
             </div>
 
             {/* Invite Codes */}
-            <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
-              <div className="p-6 border-b border-slate-800">
-                <h2 className="text-2xl font-bold text-white font-zhoro">
+            <div className="liquid-card overflow-hidden">
+              <div className="p-6 border-b border-amber-500/20">
+                <h2 className="text-2xl font-bold text-amber-300 font-[Bricolage_Grotesque]">
                   Kode Undangan
                 </h2>
               </div>
@@ -338,7 +345,7 @@ export default function AdminPanel() {
                   {inviteCodes.map((code) => (
                     <div
                       key={code.code}
-                      className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-slate-700"
+                      className="flex items-center justify-between p-4 glass-input rounded-lg border border-amber-500/20"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -360,13 +367,13 @@ export default function AdminPanel() {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-amber-200/40">
                           Dibuat: {new Date(code.createdAt).toLocaleDateString("id-ID")}
                         </p>
                       </div>
                       <button
                         onClick={() => handleCopyCode(code.code)}
-                        className="p-2 hover:bg-slate-700 rounded transition text-slate-400 hover:text-amber-400"
+                        className="p-2 hover:bg-amber-900/30 rounded transition text-amber-200/60 hover:text-amber-400 liquid-btn btn-sm"
                       >
                         <svg
                           className="w-5 h-5"
@@ -387,7 +394,7 @@ export default function AdminPanel() {
                 </div>
               ) : (
                 <div className="p-12 text-center">
-                  <p className="text-slate-400">Belum ada kode undangan</p>
+                  <p className="text-amber-100/60">Belum ada kode undangan</p>
                 </div>
               )}
             </div>

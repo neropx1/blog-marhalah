@@ -1,12 +1,10 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from "@remix-run/react";
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
-// 1. Ambil URL dari file CSS yang baru dibuat tadi
-import stylesheet from "~/app.css?url";
-import Navbar from "~/components/Navbar";
+import styles from "./app.css?url";
+import Navbar from "./components/Navbar";
 
-// 2. Daftarkan CSS ke dalam fungsi links bawaan Remix
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: stylesheet },
+  { rel: "stylesheet", href: styles },
   {
     rel: "preconnect",
     href: "https://fonts.googleapis.com",
@@ -18,14 +16,9 @@ export const links: LinksFunction = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Texturina:wght@300;400;700&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Texturina:wght@300;400;700&family=Bricolage+Grotesque:wght@300;400;500;600;700;800&display=swap",
   },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap",
-  },
-
-  { rel: "icon", href: "  favicon.ico", type: "image/ico" },
+  { rel: "icon", href: "favicon.ico", type: "image/ico" },
 ];
 
 export const meta: MetaFunction = () => [
@@ -34,9 +27,18 @@ export const meta: MetaFunction = () => [
   { title: "Impervious Generation — Official Platform" },
   {
     name: "description",
-    content:
-      "Official Website Impervious Generation - 2027",
+    content: "Official Website Impervious Generation - 2027. Berbagi cerita, pengetahuan, dan inspirasi dari perjalanan kami.",
   },
+  { name: "keywords", content: "blog, artikel, inspirasi, pengetahuan, komunitas" },
+  { name: "author", content: "Impervious Generation" },
+  { name: "robots", content: "index, follow" },
+  { property: "og:title", content: "Impervious Generation — Official Platform" },
+  { property: "og:description", content: "Official Website Impervious Generation - 2027. Berbagi cerita, pengetahuan, dan inspirasi dari perjalanan kami." },
+  { property: "og:type", content: "website" },
+  { property: "og:locale", content: "id_ID" },
+  { name: "twitter:card", content: "summary_large_image" },
+  { name: "twitter:title", content: "Impervious Generation — Official Platform" },
+  { name: "twitter:description", content: "Official Website Impervious Generation - 2027. Berbagi cerita, pengetahuan, dan inspirasi dari perjalanan kami." },
   { icon: "favicon.ico" }
 ];
 
