@@ -3,7 +3,7 @@
 
     export const config = {
       name: "Remix server handler",
-      generator: "@netlify/remix-adapter@3.0.0",
+      generator: "@netlify/remix-adapter@2.7.0",
       path: "/*",
       preferStatic: true,
     };

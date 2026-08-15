@@ -13,14 +13,6 @@ export default defineConfig({
   },
   publicDir: "public",
   build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          remix: ['@remix-run/react', '@remix-run/node'],
-        },
-      },
-    },
     chunkSizeWarningLimit: 1000,
     cssCodeSplit: true,
   },
