@@ -26,8 +26,7 @@ export default function Footer({ categories = [], links = {} }: FooterProps) {
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-6">
-              <img className="w-10 h-10 rounded-lg" src="/lambang.webp" alt="Logo" />
-              <div className="text-xl md:text-2xl font-bold font-[Bricolage_Grotesque] text-amber-400">impervio<span className="font-[Bricolage_Grotesque] text-amber-300">.us</span></div>
+              <img className="md:w-64 w-48" src="logo-horizontal-negative.webp" alt="Logo" />
             </div>
             <p className="text-sm leading-relaxed text-amber-100/70 mb-6 font-[Bricolage_Grotesque]">
               Generasi tonggak 100 Tahun Kedua Gontor yang tangguh dalam mengupayakan perbaikan umat dan menegakkan kebenaran, teguh dalam mempertahankan prinsip Islam, identitas, dan nilai Gontori, kokoh dalam integritas, selaras antara seruan dan perbuatan, serta dinamis meningkatkan kualitas umat demi mewujudkan pusat peradaban dunia.

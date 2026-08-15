@@ -114,8 +114,6 @@ async function getLatestCommitSha(
     ...(token ? { Authorization: `token ${token}` } : {}),
   };
 
-  console.log("Headers:", headers);
-
   if (commitCache?.etag) {
     headers["If-None-Match"] = commitCache.etag;
   }
