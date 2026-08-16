@@ -274,6 +274,8 @@ export async function fetchPostsFromGithub() {
               frontmatter.date ||
               new Date().toLocaleDateString("id-ID"),
             author: frontmatter.author || "Admin",
+            photographer: frontmatter.photographer || null,
+            editor: frontmatter.editor || null,
             body,
             tags: cleanedTags,
             cover_image: coverImageItems[0]?.url,

@@ -11,23 +11,33 @@ export default function LazyImage({ src, alt, className = "", placeholder = "" }
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    const imgElement = imgRef.current;
+    if (!imgElement) return;
+
+    observerRef.current = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsInView(true);
-          observer.disconnect();
+          if (observerRef.current) {
+            observerRef.current.disconnect();
+            observerRef.current = null;
+          }
         }
       },
       { threshold: 0.1 }
     );
 
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
+    observerRef.current.observe(imgElement);
 
-    return () => observer.disconnect();
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+    };
   }, []);
 
   return (

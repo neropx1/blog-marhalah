@@ -25,7 +25,7 @@ importers:
         version: 2.112.3
       '@sveltia/cms':
         specifier: latest
-        version: 0.190.0
+        version: 0.191.0
       '@tabler/icons-react':
         specifier: ^3.46.0
         version: 3.46.0(react@18.3.1)
@@ -836,8 +836,8 @@ packages:
       '@opentelemetry/api':
         optional: true
 
-  '@sveltia/cms@0.190.0':
-    resolution: {integrity: sha512-Ic4xXbpdTf6A6lyMRXN9IxU++tL+WWk69s4kYh01MXw6c7EPYuGDJDDHRpXDktgvulTt0OY8IvWmk//xw6+s2A==}
+  '@sveltia/cms@0.191.0':
+    resolution: {integrity: sha512-rieUj6eKHFXrnN/IVBXkpHNRbrQxMwPYnnIH2plTLVw/Zf2p+mzTvKnJ6y2ulPbDGu+DrFtiVUSeWo3S04GsTw==}
 
   '@tabler/icons-react@3.46.0':
     resolution: {integrity: sha512-CCm7xJWhDT2PH4ZIFkP6AgYKtVhq0gpYkjUN+GVh1AzmIQaa77OW0bQPBPQiTE0PsXMR9oSxFqA3qBglzPyrVQ==}
@@ -3887,7 +3887,7 @@ snapshots:
       '@supabase/realtime-js': 2.112.3
       '@supabase/storage-js': 2.112.3
 
-  '@sveltia/cms@0.190.0': {}
+  '@sveltia/cms@0.191.0': {}
 
   '@tabler/icons-react@3.46.0(react@18.3.1)':
     dependencies:

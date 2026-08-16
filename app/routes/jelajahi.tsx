@@ -1,12 +1,20 @@
 import { json, type LoaderFunction } from "@remix-run/node";
-import { useLoaderData, Link, useSearchParams } from "@remix-run/react";
+import { useLoaderData, Link, useSearchParams, Form } from "@remix-run/react";
 import { fetchPostsFromGithub } from "../utils/github-posts";
-import { useState, useMemo } from "react";
+import { useState, useMemo, FormEvent } from "react";
 import Footer from "../components/Footer";
 
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
   const posts = await fetchPostsFromGithub();
-  return json({ posts });
+  return json(
+    { posts },
+    {
+      headers: {
+        "Cache-Control": "public, max-age=300, s-maxage=600",
+        "Vary": "Accept-Encoding",
+      },
+    }
+  );
 };
 
 interface Post {
@@ -31,6 +39,7 @@ const CATEGORIES = ["Berita", "Artikel", "Santri", "Maklumat", "Pengumuman"];
 export default function Browse() {
   const { posts } = useLoaderData<LoaderData>();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [localSearchQuery, setLocalSearchQuery] = useState(searchParams.get("q") || "");
 
   const searchQuery = searchParams.get("q") || "";
   const selectedCategory = searchParams.get("category") || "";
@@ -60,11 +69,11 @@ export default function Browse() {
     return Array.from(cats).sort();
   }, [posts]);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuery = e.target.value;
+  const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const params = new URLSearchParams(searchParams);
-    if (newQuery) {
-      params.set("q", newQuery);
+    if (localSearchQuery.trim()) {
+      params.set("q", localSearchQuery.trim());
     } else {
       params.delete("q");
     }
@@ -83,10 +92,11 @@ export default function Browse() {
 
   const handleClearFilters = () => {
     setSearchParams("");
+    setLocalSearchQuery("");
   };
 
   return (
-    <main className="min-h-screen gradient-wave">
+    <main className="min-h-screen gradient-wave pb-20 md:pb-0">
       {/* Hero */}
       <section className="relative overflow-hidden py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
@@ -102,18 +112,20 @@ export default function Browse() {
           {/* Search Bar */}
           <div className="max-w-10xl mx-auto">
             <div className="liquid-card">
-              <div className="relative">
+              <Form onSubmit={handleSearchSubmit} className="relative">
                 <input
                   type="text"
                   placeholder="Cari artikel, berita, atau tag..."
-                  value={searchQuery}
-                  onChange={handleSearch}
+                  value={localSearchQuery}
+                  onChange={(e) => setLocalSearchQuery(e.target.value)}
                   className="w-full glass-input text-amber-100 placeholder-amber-200/40 px-4 py-3 rounded-lg font-[Merriweather]"
                 />
-                <svg className="absolute right-3.5 top-3.5 w-5 h-5 text-amber-400 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
+                <button type="submit" className="absolute right-3.5 top-3.5 w-5 h-5 text-amber-400 opacity-60 hover:opacity-100 transition">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+              </Form>
             </div>
           </div>
         </div>
@@ -190,6 +202,7 @@ export default function Browse() {
                     <img
                       src={post.cover_image}
                       alt={post.title}
+                      loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                     />
                   ) : (

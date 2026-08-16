@@ -2,6 +2,7 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from "@r
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import styles from "./app.css?url";
 import Navbar from "./components/Navbar";
+import LoadingScreen from "./components/LoadingScreen";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -15,10 +16,47 @@ export const links: LinksFunction = () => [
     crossOrigin: "anonymous",
   },
   {
+    rel: "dns-prefetch",
+    href: "https://cdn.jsdelivr.net",
+  },
+  {
+    rel: "dns-prefetch",
+    href: "https://api.github.com",
+  },
+  {
+    rel: "dns-prefetch",
+    href: "https://data.jsdelivr.com",
+  },
+  {
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Texturina:wght@300;400;700&family=Bricolage+Grotesque:wght@300;400;500;600;700;800&display=swap",
   },
   { rel: "icon", href: "favicon.ico", type: "image/ico" },
+  {
+    rel: "preload",
+    as: "image",
+    href: "/horizontal.webp",
+  },
+  {
+    rel: "prefetch",
+    as: "image",
+    href: "/lambang.webp",
+  },
+  {
+    rel: "prefetch",
+    as: "page",
+    href: "/jelajahi",
+  },
+  {
+    rel: "prefetch",
+    as: "page",
+    href: "/tentang",
+  },
+  {
+    rel: "prefetch",
+    as: "page",
+    href: "/not-found",
+  },
 ];
 
 export const meta: MetaFunction = () => [
@@ -67,6 +105,7 @@ export default function App() {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
+        <LoadingScreen />
         {!isAdminRoute && <Navbar />}
         <Outlet />
         <ScrollRestoration />

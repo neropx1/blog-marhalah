@@ -9,7 +9,15 @@ import { StripeGradientShader } from "../components/ui/stripe-like-gradient-shad
 
 export const loader: LoaderFunction = async () => {
   const posts = await fetchPostsFromGithub();
-  return json({ posts });
+  return json(
+    { posts },
+    {
+      headers: {
+        "Cache-Control": "public, max-age=300, s-maxage=600, stale-while-revalidate=86400",
+        "Vary": "Accept-Encoding",
+      },
+    }
+  );
 };
 
 export const meta: MetaFunction = () => [

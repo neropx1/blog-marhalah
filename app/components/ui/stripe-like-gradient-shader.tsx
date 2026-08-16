@@ -15,7 +15,7 @@ export const StripeGradientShader = ({ className }: StripeGradientShaderProps) =
         color3: { r: 106, g: 82, b: 42 },
         speed: 0.6,
         scale: 0.9,
-        type: 'silk',
+        type: 'mesh',
         noise: 0.5
       }}/> 
     </div>

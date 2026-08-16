@@ -214,8 +214,8 @@ export default function PostDetail() {
             </span>
             <time className="text-sm text-amber-200/60 font-[Bricolage_Grotesque]">{post.date}</time>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-amber-200 mb-6 leading-tight font-[Bricolage_Grotesque]">{post.title}</h1>
-          <p className="text-base md:text-lg text-amber-100/80 mb-6 font-[Bricolage_Grotesque]">{post.description}</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-amber-200 mb-6 leading-tight font-[Texturina]">{post.title}</h1>
+          <p className="text-base md:text-sm text-amber-100/80 mb-6 font-[Bricolage_Grotesque]">{post.description}</p>
           <div className="flex items-center gap-6 border-t border-amber-500/20 pt-6 flex-wrap">
             <div>
               <p className="text-xs text-amber-200/50 mb-1 uppercase tracking-widest">Ditulis oleh</p>
@@ -223,7 +223,7 @@ export default function PostDetail() {
               {post.photographer && (
                 <div className="mt-2">
                   <p className="text-sm text-amber-200/50 mb-1 flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h18M3 12h18M3 17h18" /></svg>
+                    
                     Fotografer
                   </p>
                   <p className="font-semibold text-amber-300 font-[Bricolage_Grotesque]">{post.photographer}</p>
@@ -232,7 +232,7 @@ export default function PostDetail() {
               {post.editor && (
                 <div className="mt-2">
                   <p className="text-sm text-amber-200/50 mb-1 flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 20h9" /></svg>
+                    
                     Editor
                   </p>
                   <p className="font-semibold text-amber-300 font-[Bricolage_Grotesque]">{post.editor}</p>
@@ -314,11 +314,20 @@ export default function PostDetail() {
         {/* Author & Share */}
         <div className="grid gap-8 sm:grid-cols-2 mb-16">
           <div className="liquid-card p-8">
-            <h4 className="font-semibold text-amber-400 font-[Bricolage_Grotesque]">Penulis</h4>
+            <h4 className="font-semibold text-amber-400 font-[Bricolage_Grotesque] mb-4">Penulis</h4>
             <p className="text-amber-100/80 font-[Bricolage_Grotesque] mb-4">{post.author}</p>
-            <h4 className="font-semibold text-amber-400 font-[Bricolage_Grotesque]">Editor</h4>
-            <p className="text-amber-100/80 font-[Bricolage_Grotesque] mb-4">{post.photographer}</p>
-            <p className="text-amber-100/80 font-[Bricolage_Grotesque] mb-4">{post.editor}</p>
+            {post.photographer && (
+              <>
+                <h4 className="font-semibold text-amber-400 font-[Bricolage_Grotesque] mb-4">Fotografer</h4>
+                <p className="text-amber-100/80 font-[Bricolage_Grotesque] mb-4">{post.photographer}</p>
+              </>
+            )}
+            {post.editor && (
+              <>
+                <h4 className="font-semibold text-amber-400 font-[Bricolage_Grotesque] mb-4">Editor</h4>
+                <p className="text-amber-100/80 font-[Bricolage_Grotesque] mb-4">{post.editor}</p>
+              </>
+            )}
           </div>
           <div className="liquid-card p-8">
             <h4 className="font-semibold text-amber-400 mb-4 font-[Bricolage_Grotesque]">Bagikan Artikel</h4>

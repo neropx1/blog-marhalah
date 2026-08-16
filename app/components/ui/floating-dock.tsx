@@ -9,7 +9,6 @@ import { Link } from "@remix-run/react";
 import { cn } from "../../lib/utils";
 import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
 import {
-  AnimatePresence,
   MotionValue,
   motion,
   useMotionValue,
@@ -44,60 +43,25 @@ const FloatingDockMobile = ({
   className?: string;
 }) => {
   const [open, setOpen] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
-  
-  const toggleOpen = () => {
-    if (!isAnimating) {
-      setOpen(!open);
-    }
-  };
 
   return (
     <div className={cn("relative block md:hidden", className)}>
-      <AnimatePresence mode="wait" onExitComplete={() => setIsAnimating(false)}>
-        {open && (
-          <motion.div
-            layoutId="nav"
-            className="absolute inset-x-0 bottom-full mb-2 flex flex-col gap-2"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            onAnimationStart={() => setIsAnimating(true)}
-            onAnimationComplete={() => setIsAnimating(false)}
-          >
-            {items.map((item, idx) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 10,
-                  transition: {
-                    delay: idx * 0.05,
-                  },
-                }}
-                transition={{ delay: (items.length - 1 - idx) * 0.05 }}
-              >
-                <Link
-                  to={item.href}
-                  key={item.title}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-900/80 border border-amber-500/30"
-                >
-                  <div className="h-4 w-4">{item.icon}</div>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {open && (
+        <div className="absolute inset-x-0 bottom-full mb-2 flex flex-col gap-2">
+          {items.map((item) => (
+            <Link
+              to={item.href}
+              key={item.title}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-900/80 border border-amber-500/30 hover:bg-amber-800/60 transition"
+            >
+              <div className="h-4 w-4">{item.icon}</div>
+            </Link>
+          ))}
+        </div>
+      )}
       <button
-        onClick={toggleOpen}
-        disabled={isAnimating}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-900/80 border border-amber-500/30 disabled:opacity-60 disabled:cursor-not-allowed"
+        onClick={() => setOpen(!open)}
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-900/80 border border-amber-500/30 hover:bg-amber-800/60 transition"
       >
         <IconLayoutNavbarCollapse className="h-5 w-5 text-amber-400" />
       </button>
@@ -191,18 +155,16 @@ function IconContainer({
         onMouseLeave={() => setHovered(false)}
         className="relative flex aspect-square items-center justify-center rounded-full bg-amber-800/60 border border-amber-500/40"
       >
-        <AnimatePresence>
-          {hovered && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, x: "-50%" }}
-              animate={{ opacity: 1, y: 0, x: "-50%" }}
-              exit={{ opacity: 0, y: 2, x: "-50%" }}
-              className="absolute -top-8 left-1/2 w-fit rounded-md border border-amber-500/30 bg-amber-900/80 px-2 py-0.5 text-xs whitespace-pre text-amber-200"
-            >
-              {title}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {hovered && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: 2, x: "-50%" }}
+            className="absolute -top-8 left-1/2 w-fit rounded-md border border-amber-500/30 bg-amber-900/80 px-2 py-0.5 text-xs whitespace-pre text-amber-200"
+          >
+            {title}
+          </motion.div>
+        )}
         <motion.div
           style={{ width: widthIcon, height: heightIcon }}
           className="flex items-center justify-center"

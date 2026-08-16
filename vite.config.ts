@@ -15,5 +15,21 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1000,
     cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // Efficient code splitting
+          if (id.includes('node_modules')) {
+            if (id.includes('@remix-run')) {
+              return 'remix';
+            }
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react';
+            }
+            return 'vendor';
+          }
+        },
+      },
+    },
   },
 });
