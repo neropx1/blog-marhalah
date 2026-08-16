@@ -16,7 +16,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition flex-shrink-0">
-              <img className="h-10 w-auto" src="/logo-horizontal-negative.webp" alt="Impervious Generation" />
+              <img className="h-10 w-auto" src="/logo-horizontal-negative.webp" alt="Impervious Generation" loading="eager" />
             </Link>
 
             {/* Desktop Nav Links */}
@@ -60,7 +60,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition flex-shrink-0">
-              <img className="h-10 w-auto" src="/logo-horizontal-negative.webp" alt="Impervious Generation" />
+              <img className="h-10 w-auto" src="/logo-horizontal-negative.webp" alt="Impervious Generation" loading="eager" />
             </Link>
           </div>
         </div>

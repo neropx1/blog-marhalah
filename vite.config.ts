@@ -5,7 +5,19 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
 export default defineConfig({
-  plugins: [tailwindcss(), remix(), netlifyPlugin()],
+  plugins: [
+    tailwindcss(), 
+    remix({
+      future: {
+        v3_fetcherPersist: true,
+        v3_lazyRouteDiscovery: true,
+        v3_relativeSplatPath: true,
+        v3_singleFetch: true,
+        v3_throwAbortReason: true,
+      },
+    }), 
+    netlifyPlugin()
+  ],
   resolve: {
     alias: {
       "~": path.resolve(__dirname, "./app"),

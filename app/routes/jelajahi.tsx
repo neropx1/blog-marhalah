@@ -3,6 +3,7 @@ import { useLoaderData, Link, useSearchParams, Form } from "@remix-run/react";
 import { fetchPostsFromGithub } from "../utils/github-posts";
 import { useState, useMemo, FormEvent } from "react";
 import Footer from "../components/Footer";
+import LazyImage from "../components/LazyImage";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const posts = await fetchPostsFromGithub();
@@ -199,10 +200,9 @@ export default function Browse() {
                 {/* Image Placeholder */}
                 <div className="aspect-video bg-amber-950/40 flex items-center justify-center overflow-hidden relative">
                   {post.cover_image ? (
-                    <img
+                    <LazyImage
                       src={post.cover_image}
                       alt={post.title}
-                      loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                     />
                   ) : (

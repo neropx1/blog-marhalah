@@ -120,7 +120,7 @@ export default function Index() {
             <div className="text-center mb-12 md:mb-16">
               <div className="inline-block mb-6">
                 <div className="w-64 md:w-96 flex items-center justify-center">
-                  <img src="master_text_logo_horizontal.webp" alt="Impervious Generation" />
+                  <LazyImage src="master_text_logo_horizontal.webp" alt="Impervious Generation" className="w-full h-auto" />
                 </div>
               </div>
 

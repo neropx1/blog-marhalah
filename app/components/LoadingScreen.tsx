@@ -24,6 +24,7 @@ export default function LoadingScreen({ minDuration = 800 }: LoadingScreenProps)
           src="/horizontal.webp" 
           alt="Impervious Generation" 
           className="h-10 w-auto"
+          loading="eager"
         />
         <div className="flex gap-2">
           <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />

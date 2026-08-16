@@ -1,5 +1,6 @@
 import { Link } from "@remix-run/react";
 import Footer from "../components/Footer";
+import LazyImage from "../components/LazyImage";
 import Navbar from "../components/Navbar";
 import { motion } from "motion/react";
 import { useState } from "react";
@@ -61,7 +62,7 @@ export default function Tentang() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-12">
               <div className="inline-block mb-8">
-                <img src="/lambang.webp" alt="Lambang Impervious Generation" className="w-48 md:w-96 mx-auto" />
+                <LazyImage src="/lambang.webp" alt="Lambang Impervious Generation" className="w-48 md:w-96 mx-auto" />
               </div>
               <h1 className="text-5xl md:text-7xl mb-4 font-[Zhoro] text-amber-200">
                 Impervious Generation
@@ -96,7 +97,7 @@ export default function Tentang() {
               Landasan Ayat
             </h2>
 
-            <img src="/ayat.webp" alt="Landasan Ayat" className="md:w-5xl w-full mx-auto md:p-8 p-2  md:liquid-card" />
+            <LazyImage src="/ayat.webp" alt="Landasan Ayat" className="md:w-5xl w-full mx-auto md:p-8 p-2  md:liquid-card" />
             <p className="text-lg md:text-xl leading-relaxed font-[Merriweather] text-amber-100/90 py-8">
               ...Dan aku tidak berkehendak menyalahi kamu (dengan mengerjakan) apa yang aku larang. Aku tidak bermaksud kecuali (mendatangkan) perbaikan selama aku masih berkesanggupan. Dan tidak ada taufik bagiku melainkan dengan (pertolongan) Allah. Hanya kepada Allah aku bertawakkal dan hanya kepada-Nya-lah aku kembali.” (QS Huud: 88)
             </p>
@@ -113,7 +114,7 @@ export default function Tentang() {
             {/* Main Logo */}
             <div className="mb-12 relative">
               <div className="absolute inset-0 bg-amber-500/20 blur-3xl rounded-full" />
-              <img src="/lambang.webp" alt="Lambang Impervious Generation" className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 relative z-10" />
+              <LazyImage src="/lambang.webp" alt="Lambang Impervious Generation" className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 relative z-10" />
             </div>
 
             {/* Philosophy Cards Grid */}
@@ -129,7 +130,7 @@ export default function Tentang() {
                 >
                   <div className="flex items-start gap-4">
                     <div className={`w-24 md:w-36`}>
-                      <img 
+                      <LazyImage 
                         src={shard.image} 
                         alt={shard.title}
                         className="w-full h-full object-contain"
@@ -163,7 +164,7 @@ export default function Tentang() {
             <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
               <div className="w-full md:w-1/2 flex justify-center">
                 <div className="w-full max-w-xs md:max-w-sm rounded-2xl overflow-hidden bg-amber-900/20">
-                  <img 
+                  <LazyImage 
                     src="https://imperviousgeneration.my.id/_next/image?url=%2Fassets%2Fimages%2Fmaskot.webp&w=640&q=75"
                     alt="Maskot Zu'aym"
                     className="w-full h-auto object-contain"
@@ -191,8 +192,7 @@ export default function Tentang() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="liquid-card p-6 text-center">
               <div className="w-64 rounded-2xl mx-auto mb-4 flex items-center justify-center overflow-hidden">
-                {/* Placeholder image from placehold.co */}
-                <img 
+                <LazyImage 
                   src="https://imperviousgeneration.my.id/_next/image?url=%2Fassets%2Fimages%2Fketua%2Ffachrillah.webp&w=3840&q=75"
                   alt="Muhammad Fachrillah"
                   className="w-full h-full object-cover"
@@ -207,8 +207,7 @@ export default function Tentang() {
 
             <div className="liquid-card p-6 text-center">
               <div className="w-64 rounded-2xl mx-auto mb-4 flex items-center justify-center overflow-hidden">
-                {/* Placeholder image from placehold.co */}
-                <img 
+                <LazyImage 
                   src="https://imperviousgeneration.my.id/_next/image?url=%2Fassets%2Fimages%2Fketua%2Fyusuf.webp&w=3840&q=75"
                   alt="Yusuf Praba Andhika Prayoga"
                   className="w-full h-full object-cover"
@@ -223,8 +222,7 @@ export default function Tentang() {
 
             <div className="liquid-card p-6 text-center">
                <div className="w-64 rounded-2xl mx-auto mb-4 flex items-center justify-center overflow-hidden">
-                {/* Placeholder image from placehold.co */}
-                <img 
+                <LazyImage 
                   src="https://imperviousgeneration.my.id/_next/image?url=%2Fassets%2Fimages%2Fketua%2Ffawwaz.webp&w=3840&q=75"
                   alt="Fawwaz Muhammad Royyan"
                   className="w-full h-full object-cover"
