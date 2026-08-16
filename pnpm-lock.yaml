@@ -32,9 +32,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      gradflow:
-        specifier: ^0.2.0
-        version: 0.2.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       isbot:
         specifier: ^5.1.2
         version: 5.2.1
@@ -1578,12 +1575,6 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
-  gradflow@0.2.0:
-    resolution: {integrity: sha512-OyotFAKm8Bd3XiaurtOWXljymoO22WPsi/54NC2k7ngt7BEeMKFMlQO6qUlwTrFBwM4iK9R6myc2JxTt0zRt+Q==}
-    peerDependencies:
-      react: '>=18.0.0'
-      react-dom: '>=18.0.0'
-
   gunzip-maybe@1.4.2:
     resolution: {integrity: sha512-4haO1M4mLO91PW57BMsDFf75UmwoRX0GkdD+Faw+Lr+r/OZrOCS0pIBwOL1xCKQqnQzbNFGgK2V2CpBUPeFNTw==}
     hasBin: true
@@ -2338,9 +2329,6 @@ packages:
   object-inspect@1.13.4:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
     engines: {node: '>= 0.4'}
-
-  ogl@1.0.11:
-    resolution: {integrity: sha512-kUpC154AFfxi16pmZUK4jk3J+8zxwTWGPo03EoYA8QPbzikHoaC82n6pNTbd+oEaJonaE8aPWBlX7ad9zrqLsA==}
 
   on-finished@2.4.1:
     resolution: {integrity: sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==}
@@ -4656,12 +4644,6 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
-  gradflow@0.2.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
-    dependencies:
-      ogl: 1.0.11
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
-
   gunzip-maybe@1.4.2:
     dependencies:
       browserify-zlib: 0.1.4
@@ -5717,8 +5699,6 @@ snapshots:
       path-key: 3.1.1
 
   object-inspect@1.13.4: {}
-
-  ogl@1.0.11: {}
 
   on-finished@2.4.1:
     dependencies:
