@@ -5,11 +5,12 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "remix vite:dev",
-    "build": "remix vite:build",
-    "preview": "remix vite:preview",
-    "typecheck": "tsc --noEmit"
-  },
+  "dev": "remix vite:dev",
+  "build": "remix vite:build",
+  "preview": "vite preview",
+  "start": "remix-serve ./build/server/index.js",
+  "typecheck": "tsc --noEmit"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",

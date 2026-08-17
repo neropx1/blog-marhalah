@@ -6,19 +6,27 @@ interface LoadingScreenProps {
 
 export default function LoadingScreen({ minDuration = 800 }: LoadingScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
+  const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false);
+    const fadeTimer = setTimeout(() => {
+      setIsFading(true);
     }, minDuration);
 
-    return () => clearTimeout(timer);
+    const hideTimer = setTimeout(() => {
+      setIsVisible(false);
+    }, minDuration + 500);
+
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(hideTimer);
+    };
   }, [minDuration]);
 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0E0B08]">
+    <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-[#0E0B08] transition-opacity duration-500 ${isFading ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
       <div className="flex flex-col items-center gap-4">
         <img 
           src="/horizontal.webp" 

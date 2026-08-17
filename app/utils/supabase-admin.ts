@@ -1,7 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 
-
-
 const supabaseUrl =
   (typeof process !== 'undefined' ? process.env.VITE_SUPABASE_URL : null) ||
   import.meta.env.VITE_SUPABASE_URL ||
