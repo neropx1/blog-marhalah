@@ -15,12 +15,14 @@ export default function Card({
   className = "",
   onClick
 }: CardProps) {
-  const baseClass = featured ? "card-featured" : "card";
-  const hoverClass = hoverable ? "hover-lift hover-glow" : "";
-  
+  const baseClass = featured
+    ? "border border-amber-500/30 bg-[#16120D] rounded-lg"
+    : "border border-[#272118] bg-[#120F0C] rounded-lg";
+  const hoverClass = hoverable ? "hover:border-amber-500/35 transition" : "";
+
   return (
     <div
-      className={`${baseClass} ${hoverClass} p-6 cursor-pointer ${className}`}
+      className={`${baseClass} ${hoverClass} p-5 cursor-pointer ${className}`}
       onClick={onClick}
     >
       {children}

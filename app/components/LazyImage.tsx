@@ -10,24 +10,33 @@ interface LazyImageProps {
 export default function LazyImage({ src, alt, className = "", placeholder = "" }: LazyImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const inViewRef = useRef(false);
+  const hasObservedRef = useRef(false);
 
   useEffect(() => {
     const imgElement = imgRef.current;
-    if (!imgElement) return;
+    if (!imgElement || hasObservedRef.current) return;
+
+    inViewRef.current = false;
+    hasObservedRef.current = true;
 
     observerRef.current = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          if (observerRef.current) {
-            observerRef.current.disconnect();
-            observerRef.current = null;
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            inViewRef.current = true;
+            setIsInView(true);
+            if (observerRef.current) {
+              observerRef.current.disconnect();
+              observerRef.current = null;
+            }
+            break;
           }
         }
       },
-      { threshold: 0.1 }
+      { rootMargin: "400px 0px", threshold: 0 }
     );
 
     observerRef.current.observe(imgElement);
@@ -37,6 +46,7 @@ export default function LazyImage({ src, alt, className = "", placeholder = "" }
         observerRef.current.disconnect();
         observerRef.current = null;
       }
+      hasObservedRef.current = false;
     };
   }, []);
 
@@ -52,6 +62,8 @@ export default function LazyImage({ src, alt, className = "", placeholder = "" }
           className={`transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
           onLoad={() => setIsLoaded(true)}
           loading="lazy"
+          decoding="async"
+          fetchPriority={isLoaded ? "low" : "auto"}
         />
       )}
     </div>

@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import LazyImage from "./LazyImage";
-import type { CoverImageItem } from "../utils/github-posts";
+import type { CoverImageItem } from "../utils/sanity.server";
 
 interface CoverImageSliderProps {
   images: (string | CoverImageItem)[];
@@ -10,52 +10,68 @@ interface CoverImageSliderProps {
 export default function CoverImageSlider({ images, title }: CoverImageSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
-  const touchEndX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchMovedRef = useRef(false);
 
-  const imageItems: CoverImageItem[] = (images || []).map((img) =>
-    typeof img === "string" ? { url: img } : img
+  const imageItems: CoverImageItem[] = useMemo(
+    () =>
+      (images || []).map((img) =>
+        typeof img === "string" ? { url: img } : img
+      ),
+    [images]
   );
+
+  const currentItem = imageItems[currentIndex] || imageItems[0];
+  const translateXPercent = -currentIndex * 100;
+
+  const prevSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev === 0 ? imageItems.length - 1 : prev - 1));
+  }, [imageItems.length]);
+
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev === imageItems.length - 1 ? 0 : prev + 1));
+  }, [imageItems.length]);
 
   if (!imageItems || imageItems.length === 0) return null;
 
-  const currentItem = imageItems[currentIndex] || imageItems[0];
-
   if (imageItems.length === 1) {
     return (
-      <div className="mb-8 glass-card rounded-xl overflow-hidden">
-        <LazyImage src={currentItem.url} alt={title} className="w-full h-auto max-h-[550px] object-cover" />
+      <figure className="mb-8">
+        <div className="overflow-hidden rounded-lg border border-[#272118] bg-[#120F0C]">
+          <LazyImage
+            src={currentItem.url}
+            alt={currentItem.alt || title}
+            className="w-full h-auto max-h-[560px] object-cover"
+          />
+        </div>
         {currentItem.caption && (
-          <div className="glass px-5 py-3 text-amber-200 text-sm font-[Bricolage_Grotesque] flex items-center gap-3">
-            <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2 2V9z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span className="leading-snug">{currentItem.caption}</span>
-          </div>
+          <figcaption className="mt-2.5 px-1 text-center text-xs md:text-sm text-[#A89C86] font-[Bricolage_Grotesque] italic">
+            {currentItem.caption}
+          </figcaption>
         )}
-      </div>
+      </figure>
     );
   }
 
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev === 0 ? imageItems.length - 1 : prev - 1));
-  };
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev === imageItems.length - 1 ? 0 : prev + 1));
-  };
-
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    touchMovedRef.current = false;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
+    const dx = Math.abs((e.touches[0].clientX || 0) - (touchStartX.current || 0));
+    const dy = Math.abs((e.touches[0].clientY || 0) - (touchStartY.current || 0));
+    if (dx > dy && dx > 8) {
+      touchMovedRef.current = true;
+    }
   };
 
-  const handleTouchEnd = () => {
-    if (!touchStartX.current || !touchEndX.current) return;
-    const distance = touchStartX.current - touchEndX.current;
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchMovedRef.current || touchStartX.current === null) return;
+
+    const clientX = e.changedTouches[0].clientX;
+    const distance = touchStartX.current - clientX;
     const isSwipeLeft = distance > 40;
     const isSwipeRight = distance < -40;
 
@@ -66,64 +82,80 @@ export default function CoverImageSlider({ images, title }: CoverImageSliderProp
     }
 
     touchStartX.current = null;
-    touchEndX.current = null;
+    touchStartY.current = null;
+    touchMovedRef.current = false;
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowLeft") {
+      prevSlide();
+    } else if (e.key === "ArrowRight") {
+      nextSlide();
+    }
   };
 
   return (
-    <div className="mb-8 relative group">
+    <figure
+      className="mb-8 relative group"
+      tabIndex={0}
+      role="region"
+      aria-label="Galeri gambar artikel"
+      onKeyDown={handleKeyDown}
+    >
       <div
-        className={`glass-card overflow-hidden relative aspect-[16/9] md:aspect-[21/9] ${
-          currentItem.caption ? "rounded-t-xl" : "rounded-xl"
-        }`}
+        className="overflow-hidden relative rounded-lg border border-[#272118] bg-[#120F0C] aspect-[16/9] md:aspect-[21/9]"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         <div
-          className="flex h-full transition-transform duration-500 ease-out"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          className="flex h-full transition-transform duration-300 ease-out will-change-transform"
+          style={{ transform: `translateX(${translateXPercent}%)` }}
         >
           {imageItems.map((img, idx) => (
             <div key={idx} className="w-full h-full flex-shrink-0 relative">
               <LazyImage
                 src={img.url}
-                alt={`${title} - Gambar ${idx + 1}`}
+                alt={img.alt || `${title} - Gambar ${idx + 1}`}
                 className="w-full h-full object-cover"
               />
             </div>
           ))}
         </div>
 
-        <div className="absolute top-4 right-4 glass text-amber-400 text-xs px-3 py-1.5 rounded-full font-mono z-10">
+        {/* Counter badge */}
+        <div className="absolute top-3 right-3 bg-black/75 text-amber-300 text-[11px] font-mono px-2 py-0.5 rounded border border-white/10 z-10">
           {currentIndex + 1} / {imageItems.length}
         </div>
 
+        {/* Prev & Next Controls */}
         <button
           onClick={prevSlide}
-          className="absolute left-3 top-1/2 -translate-y-1/2 glass-button w-10 h-10 rounded-full text-amber-400 flex items-center justify-center hover:text-slate-950 transition z-10 opacity-80 hover:opacity-100"
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/70 hover:bg-black/90 text-amber-300 flex items-center justify-center transition border border-white/10 z-10"
           aria-label="Gambar Sebelumnya"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         <button
           onClick={nextSlide}
-          className="absolute right-3 top-1/2 -translate-y-1/2 glass-button w-10 h-10 rounded-full text-amber-400 flex items-center justify-center hover:text-slate-950 transition z-10 opacity-80 hover:opacity-100"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/70 hover:bg-black/90 text-amber-300 flex items-center justify-center transition border border-white/10 z-10"
           aria-label="Gambar Selanjutnya"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
 
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10 glass px-3 py-1.5 rounded-full">
+        {/* Indicator dots */}
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 bg-black/60 px-2.5 py-1 rounded-full border border-white/10">
           {imageItems.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setCurrentIndex(idx)}
-              className={`h-2 rounded-full transition-all ${
-                currentIndex === idx ? "w-6 bg-amber-400" : "w-2 bg-amber-100/50 hover:bg-amber-100/80"
+              className={`h-1.5 rounded-full transition-all ${
+                currentIndex === idx ? "w-4 bg-amber-400" : "w-1.5 bg-white/40 hover:bg-white/70"
               }`}
               aria-label={`Ke gambar ${idx + 1}`}
             />
@@ -131,31 +163,29 @@ export default function CoverImageSlider({ images, title }: CoverImageSliderProp
         </div>
       </div>
 
+      {/* Caption if provided */}
       {currentItem.caption && (
-        <div className="glass border-x border-b border-amber-500/30 px-5 py-3 rounded-b-xl text-amber-200 text-sm font-[Bricolage_Grotesque] flex items-center gap-3">
-          <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2 2V9z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span className="leading-snug">{currentItem.caption}</span>
-        </div>
+        <figcaption className="mt-2.5 px-1 text-center text-xs md:text-sm text-[#A89C86] font-[Bricolage_Grotesque] italic">
+          {currentItem.caption}
+        </figcaption>
       )}
 
-      <div className="flex gap-3 mt-3 overflow-x-auto pb-2 scrollbar-thin">
+      {/* Sleek thumbnails row */}
+      <div className="flex gap-2 mt-2.5 overflow-x-auto pb-1 scrollbar-thin">
         {imageItems.map((img, idx) => (
           <button
             key={idx}
             onClick={() => setCurrentIndex(idx)}
-            className={`relative rounded-lg overflow-hidden h-16 w-24 flex-shrink-0 border-2 transition ${
+            className={`relative rounded overflow-hidden h-12 w-20 flex-shrink-0 border transition ${
               currentIndex === idx
-                ? "border-amber-400 ring-2 ring-amber-400/50 opacity-100 scale-105"
-                : "border-slate-800 opacity-60 hover:opacity-100"
+                ? "border-amber-400 opacity-100 ring-1 ring-amber-400/50"
+                : "border-[#272118] opacity-50 hover:opacity-90"
             }`}
           >
             <LazyImage src={img.url} alt="" className="w-full h-full object-cover" />
           </button>
         ))}
       </div>
-    </div>
+    </figure>
   );
 }

@@ -17,15 +17,7 @@ export const links: LinksFunction = () => [
   },
   {
     rel: "dns-prefetch",
-    href: "https://cdn.jsdelivr.net",
-  },
-  {
-    rel: "dns-prefetch",
-    href: "https://api.github.com",
-  },
-  {
-    rel: "dns-prefetch",
-    href: "https://data.jsdelivr.com",
+    href: "https://cdn.sanity.io",
   },
   {
     rel: "stylesheet",

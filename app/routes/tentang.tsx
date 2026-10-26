@@ -1,265 +1,278 @@
 import { Link } from "@remix-run/react";
 import Footer from "../components/Footer";
 import LazyImage from "../components/LazyImage";
-import Navbar from "../components/Navbar";
-import { motion } from "motion/react";
 import { useState } from "react";
-import { ShootingStars } from "~/components/ui/shooting-stars";
-import { StarsBackground } from "~/components/ui/stars-bg";
+import type { MetaFunction } from "@remix-run/node";
+
+export const meta: MetaFunction = () => [
+  { title: "Tentang — Impervious Generation" },
+  { name: "description", content: "Profil, visi, filosofi lambang, dan identitas resmi Impervious Generation." },
+];
 
 export default function Tentang() {
   const [activeShard, setActiveShard] = useState<string | null>(null);
 
   const shards = [
     {
-      id: 'crown',
-      title: 'Mahkota',
-      color: 'from-amber-400 to-amber-600',
-      shadow: 'shadow-amber-500/50',
-      glow: 'bg-amber-400/20',
-      textColor: 'text-amber-300',
-      image: 'https://imperviousgeneration.my.id/assets/images/part_logo/lafadz_allah.webp'
+      id: "crown",
+      title: "Mahkota",
+      badge: "Keagungan",
+      image: "https://imperviousgeneration.my.id/assets/images/part_logo/lafadz_allah.webp",
+      desc: "Simbol keagungan dan kemuliaan dalam perjuangan. Menggambarkan visi tinggi untuk mencapai kejayaan umat.",
     },
     {
-      id: 'circle',
-      title: 'Satuan Lingkaran',
-      color: 'from-purple-400 to-purple-600',
-      shadow: 'shadow-purple-500/50',
-      glow: 'bg-purple-400/20',
-      textColor: 'text-purple-300',
-      image: 'https://imperviousgeneration.my.id/assets/images/part_logo/mahkota.webp'
+      id: "circle",
+      title: "Satuan Lingkaran",
+      badge: "Persatuan",
+      image: "https://imperviousgeneration.my.id/assets/images/part_logo/mahkota.webp",
+      desc: "Melambangkan kebersamaan dan kesatuan dalam perjuangan. Setiap elemen saling melengkapi demi tujuan yang sama.",
     },
     {
-      id: 'book',
-      title: 'Ilmu Pengetahuan',
-      color: 'from-blue-400 to-blue-600',
-      shadow: 'shadow-blue-500/50',
-      glow: 'bg-blue-400/20',
-      textColor: 'text-blue-300',
-      image: 'https://imperviousgeneration.my.id/assets/images/part_logo/lempengan.webp'
+      id: "book",
+      title: "Ilmu Pengetahuan",
+      badge: "Intelektual",
+      image: "https://imperviousgeneration.my.id/assets/images/part_logo/lempengan.webp",
+      desc: "Al-Qur'an, Hadist, dan pena. Fondasi ilmu pengetahuan yang menjadi dasar setiap langkah dan keputusan.",
     },
     {
-      id: 'shield',
-      title: 'Perlindungan',
-      color: 'from-green-400 to-green-600',
-      shadow: 'shadow-green-500/50',
-      glow: 'bg-green-400/20',
-      textColor: 'text-green-300',
-      image: 'https://imperviousgeneration.my.id/assets/images/part_logo/muhammad.webp'
-    }
+      id: "shield",
+      title: "Perlindungan & Integritas",
+      badge: "Prinsip",
+      image: "https://imperviousgeneration.my.id/assets/images/part_logo/muhammad.webp",
+      desc: "Integritas dan prinsip yang kokoh. Menjaga identitas dan nilai luhur Gontori dalam menghadapi dinamika zaman.",
+    },
   ];
 
   return (
-    <main className="min-h-screen relative pb-20 md:pb-0">
-      {/* Background gradient shader */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-900/20 via-amber-800/10 to-purple-900/20 animate-pulse" />
-      </div>
-
-      <div className="relative z-10">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden py-2 md:py-4">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-12">
-              <div className="inline-block mb-8">
-                <LazyImage src="/lambang.webp" alt="Lambang Impervious Generation" className="w-48 md:w-96 mx-auto" />
-              </div>
-              <h1 className="text-5xl md:text-7xl mb-4 font-[Zhoro] text-amber-200">
-                Impervious Generation
-              </h1>
-              <p className="text-2xl md:text-3xl font-[Zhoro] text-amber-400 mb-6">
-                Golden Age Catalyst
-              </p>
-              <p className="text-lg md:text-xl text-amber-100/80 font-[Merriweather] leading-relaxed">
-                Unshaken · Unbroken
-              </p>
-            </div>
+    <main className="min-h-screen bg-[#0C0A08] text-[#FAF4E8] pb-16 md:pb-0">
+      {/* Editorial Header */}
+      <section className="border-b border-[#221C14] bg-[#0E0C09] py-12 md:py-16 text-center">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="w-28 md:w-36 mx-auto mb-6">
+            <LazyImage
+              src="/lambang.webp"
+              alt="Lambang Impervious Generation"
+              className="w-full h-auto"
+            />
           </div>
-        </section>
+          <span className="text-xs uppercase font-bold tracking-widest text-amber-400 font-[Bricolage_Grotesque]">
+            Profil & Landasan Angkatan
+          </span>
+          <h1 className="text-3xl md:text-5xl font-bold font-[Zhoro] text-[#FAF4E8] mt-2 mb-3">
+            Impervious Generation
+          </h1>
+          <p className="text-lg md:text-xl font-[Zhoro] text-amber-400 mb-2">
+            Golden Age Catalyst
+          </p>
+          <p className="text-xs md:text-sm text-[#8F816B] font-[Bricolage_Grotesque] tracking-widest uppercase">
+            Unshaken · Unbroken
+          </p>
+        </div>
+      </section>
 
+      {/* Landasan Angkatan & Landasan Ayat */}
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 space-y-8">
         {/* Landasan Angkatan */}
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="border-dashed border-amber-400/30 p-8 md:p-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-[Zhoro] !text-amber-400">
-              Landasan Angkatan
-            </h2>
-            <p className="text-lg md:text-xl leading-relaxed font-[Merriweather] text-amber-100/90 ">
-              Generasi tonggak 100 Tahun Kedua Gontor yang tangguh dalam mengupayakan perbaikan umat dan menegakkan kebenaran, teguh dalam mempertahankan prinsip Islam, identitas, dan nilai Gontori, kokoh dalam integritas, selaras antara seruan dan perbuatan, serta dinamis meningkatkan kualitas umat demi mewujudkan pusat peradaban dunia.
-            </p>
+        <div className="border border-[#272118] bg-[#120F0C] rounded-lg p-6 md:p-8">
+          <span className="text-[11px] uppercase font-bold tracking-widest text-amber-400 font-[Bricolage_Grotesque] block mb-2">
+            Landasan Filosofis
+          </span>
+          <h2 className="text-xl md:text-2xl font-bold font-[Zhoro] text-[#FAF4E8] mb-4">
+            Landasan Angkatan
+          </h2>
+          <p className="text-sm md:text-base leading-relaxed font-[Merriweather] text-[#D8CEBA]">
+            Generasi tonggak 100 Tahun Kedua Gontor yang tangguh dalam mengupayakan perbaikan umat dan menegakkan kebenaran, teguh dalam mempertahankan prinsip Islam, identitas, dan nilai Gontori, kokoh dalam integritas, selaras antara seruan dan perbuatan, serta dinamis meningkatkan kualitas umat demi mewujudkan pusat peradaban dunia.
+          </p>
+        </div>
+
+        {/* Landasan Ayat */}
+        <div className="border border-[#272118] bg-[#120F0C] rounded-lg p-6 md:p-8">
+          <span className="text-[11px] uppercase font-bold tracking-widest text-amber-400 font-[Bricolage_Grotesque] block mb-2">
+            Landasan Wahyu
+          </span>
+          <h2 className="text-xl md:text-2xl font-bold font-[Zhoro] text-[#FAF4E8] mb-4">
+            QS. Huud: 88
+          </h2>
+          <div className="rounded overflow-hidden my-4 bg-[#16120D] border border-[#272118]">
+            <LazyImage
+              src="/ayat.webp"
+              alt="Landasan Ayat QS Huud 88"
+              className="w-full h-auto p-4 md:p-6"
+            />
           </div>
-        </section>
+          <blockquote className="border-l-2 border-amber-400 pl-4 my-4 italic text-sm md:text-base font-[Merriweather] text-[#F7E4A9]">
+            "...Dan aku tidak berkehendak menyalahi kamu (dengan mengerjakan) apa yang aku larang. Aku tidak bermaksud kecuali (mendatangkan) perbaikan selama aku masih berkesanggupan. Dan tidak ada taufik bagiku melainkan dengan (pertolongan) Allah. Hanya kepada Allah aku bertawakkal dan hanya kepada-Nya-lah aku kembali.” (QS Huud: 88)
+          </blockquote>
+        </div>
+      </section>
 
-        {/* Landasan Angkatan */}
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ">
-          <div className="border-dashed border-amber-400/30 p-8 md:p-12">
-           
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-[Zhoro] !text-amber-400">
-              Landasan Ayat
-            </h2>
-
-            <LazyImage src="/ayat.webp" alt="Landasan Ayat" className="md:w-5xl w-full mx-auto md:p-8 p-2  md:liquid-card" />
-            <p className="text-lg md:text-xl leading-relaxed font-[Merriweather] text-amber-100/90 py-8">
-              ...Dan aku tidak berkehendak menyalahi kamu (dengan mengerjakan) apa yang aku larang. Aku tidak bermaksud kecuali (mendatangkan) perbaikan selama aku masih berkesanggupan. Dan tidak ada taufik bagiku melainkan dengan (pertolongan) Allah. Hanya kepada Allah aku bertawakkal dan hanya kepada-Nya-lah aku kembali.” (QS Huud: 88)
-            </p>
-          </div>
-        </section>
-
-        {/* Identitas Visual */}
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 font-[Zhoro] !text-amber-400 text-center">
+      {/* Identitas Visual & Filosofi Lambang */}
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+        <div className="border-b border-[#221C14] pb-3 mb-8 text-center">
+          <span className="text-xs uppercase font-bold tracking-widest text-amber-400 font-[Bricolage_Grotesque]">
+            Simbolisme
+          </span>
+          <h2 className="text-2xl md:text-3xl font-bold font-[Zhoro] text-[#FAF4E8] mt-1">
             Identitas Visual
           </h2>
-          
-          <div className="flex flex-col items-center">
-            {/* Main Logo */}
-            <div className="mb-12 relative">
-              <div className="absolute inset-0 bg-amber-500/20 blur-3xl rounded-full" />
-              <LazyImage src="/lambang.webp" alt="Lambang Impervious Generation" className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 relative z-10" />
-            </div>
+        </div>
 
-            {/* Philosophy Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
-              {shards.map((shard) => (
-                <motion.div
-                  key={shard.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className={`liquid-card p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:border-amber-400 ${activeShard === shard.id ? 'border-2 ' + shard.color.split(' ')[1] : ''}`}
-                  onClick={() => setActiveShard(activeShard === shard.id ? null : shard.id)}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className={`w-24 md:w-36`}>
-                      <LazyImage 
-                        src={shard.image} 
-                        alt={shard.title}
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className={`text-lg md:text-xl font-bold mb-2 font-[Bricolage_Grotesque] ${shard.textColor}`}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {shards.map((shard) => {
+            const isSelected = activeShard === shard.id;
+            return (
+              <div
+                key={shard.id}
+                onClick={() => setActiveShard(isSelected ? null : shard.id)}
+                className={`border rounded-lg p-5 cursor-pointer transition ${
+                  isSelected
+                    ? "border-amber-400 bg-[#16130F]"
+                    : "border-[#272118] bg-[#120F0C] hover:border-amber-500/30"
+                }`}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 rounded bg-[#16120D] border border-[#272118] p-2 flex-shrink-0 flex items-center justify-center">
+                    <LazyImage
+                      src={shard.image}
+                      alt={shard.title}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="text-sm md:text-base font-bold font-[Bricolage_Grotesque] text-[#FAF4E8]">
                         {shard.title}
                       </h3>
-                      <p className="text-amber-100/80 font-[Merriweather] leading-relaxed text-sm md:text-base">
-                        {shard.id === 'crown' && 'Simbol keagungan dan kemuliaan dalam perjuangan. Menggambarkan visi tinggi untuk mencapai kejayaan umat.'}
-                        {shard.id === 'circle' && 'Melambangkan kebersamaan dan kesatuan dalam perjuangan. Setiap elemen saling melengkapi demi tujuan yang sama.'}
-                        {shard.id === 'book' && 'Al-Qur\'an, Hadist, dan pena. Fondasi ilmu yang menjadi dasar setiap langkah dan keputusan.'}
-                        {shard.id === 'shield' && 'Integritas dan prinsip yang kokoh. Menjaga identitas Gontori dalam setiap tantangan zaman.'}
-                      </p>
+                      <span className="editorial-tag text-[9px] py-0 px-1.5">
+                        {shard.badge}
+                      </span>
                     </div>
+                    <p className="text-xs text-[#8F816B] font-[Merriweather] leading-relaxed">
+                      {shard.desc}
+                    </p>
                   </div>
-                </motion.div>
-              ))}
-
-            </div>
-          </div>
-        </section>
-
-        {/* Maskot */}
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8 font-[Zhoro] !text-amber-300 text-center">
-            Maskot Angkatan
-          </h2>
-          <div className="liquid-card p-6 md:p-8 max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
-              <div className="w-full md:w-1/2 flex justify-center">
-                <div className="w-full max-w-xs md:max-w-sm rounded-2xl overflow-hidden bg-amber-900/20">
-                  <LazyImage 
-                    src="https://imperviousgeneration.my.id/_next/image?url=%2Fassets%2Fimages%2Fmaskot.webp&w=640&q=75"
-                    alt="Maskot Zu'aym"
-                    className="w-full h-auto object-contain"
-                  />
                 </div>
               </div>
-              <div className="w-full md:w-1/2">
-                <h3 className="text-xl md:text-2xl font-bold mb-3 font-[Bricolage_Grotesque] text-amber-400 text-center md:text-left !text-amber-400 uppercase tracking-widest">
-                  Zu'aym
-                </h3>
-                <p className="text-amber-100/80 font-[Merriweather] leading-relaxed mb-6 text-sm md:text-base text-center md:text-left">
-                  Berakar dari za'āmah (kepemimpinan), mencerminkan sosok yang siap memikul amanah dan menentukan arah perjuangan—dekat dengan yang dipimpinnya, teguh dalam prinsip, berintegritas, serta konsisten membuktikan seruan melalui tindakan nyata, sehingga kepemimpinannya hidup dalam amal dan berdampak bagi peradaban umat.
-                </p>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Maskot Angkatan */}
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10">
+        <div className="border border-[#272118] bg-[#120F0C] rounded-lg p-6 md:p-8">
+          <div className="flex flex-col md:flex-row gap-6 items-center">
+            <div className="w-40 md:w-52 flex-shrink-0">
+              <div className="rounded bg-[#16120D] border border-[#272118] p-4">
+                <LazyImage
+                  src="https://imperviousgeneration.my.id/_next/image?url=%2Fassets%2Fimages%2Fmaskot.webp&w=640&q=75"
+                  alt="Maskot Zu'aym"
+                  className="w-full h-auto object-contain"
+                />
               </div>
             </div>
+            <div className="flex-1">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-amber-400 font-[Bricolage_Grotesque]">
+                Maskot Resmi
+              </span>
+              <h3 className="text-2xl font-bold font-[Bricolage_Grotesque] text-[#FAF4E8] mt-0.5 mb-2">
+                Zu'aym
+              </h3>
+              <p className="text-xs md:text-sm text-[#A89C86] font-[Merriweather] leading-relaxed">
+                Berakar dari kata <em>za'āmah</em> (kepemimpinan), mencerminkan sosok yang siap memikul amanah dan menentukan arah perjuangan—dekat dengan yang dipimpinnya, teguh dalam prinsip, berintegritas, serta konsisten membuktikan seruan melalui tindakan nyata.
+              </p>
+            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Ketua Angkatan */}
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 font-[Bricolage_Grotesque] text-amber-300 text-center">
+      {/* Dewan Pimpinan / Ketua Angkatan */}
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10">
+        <div className="border-b border-[#221C14] pb-3 mb-6 text-center">
+          <span className="text-xs uppercase font-bold tracking-widest text-amber-400 font-[Bricolage_Grotesque]">
+            Kepengurusan
+          </span>
+          <h2 className="text-xl md:text-2xl font-bold font-[Bricolage_Grotesque] text-[#FAF4E8] mt-1">
             Ketua Angkatan
           </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="liquid-card p-6 text-center">
-              <div className="w-64 rounded-2xl mx-auto mb-4 flex items-center justify-center overflow-hidden">
-                <LazyImage 
-                  src="https://imperviousgeneration.my.id/_next/image?url=%2Fassets%2Fimages%2Fketua%2Ffachrillah.webp&w=3840&q=75"
-                  alt="Muhammad Fachrillah"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h3 className="text-xl font-bold mb-2 font-[Bricolage_Grotesque] text-amber-300">
-                Muhammad Fachrillah
-              </h3>
-              <p className="text-amber-400 font-[Merriweather] mb-2">Ketua 1</p>
-              <p className="text-amber-100/60 text-sm font-[Merriweather]">Our Prime Catalyst</p>
-            </div>
+        </div>
 
-            <div className="liquid-card p-6 text-center">
-              <div className="w-64 rounded-2xl mx-auto mb-4 flex items-center justify-center overflow-hidden">
-                <LazyImage 
-                  src="https://imperviousgeneration.my.id/_next/image?url=%2Fassets%2Fimages%2Fketua%2Fyusuf.webp&w=3840&q=75"
-                  alt="Yusuf Praba Andhika Prayoga"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h3 className="text-xl font-bold mb-2 font-[Bricolage_Grotesque] text-amber-300">
-                Yusuf Praba Andhika Prayoga
-              </h3>
-              <p className="text-amber-400 font-[Merriweather] mb-2">Ketua 2</p>
-              <p className="text-amber-100/60 text-sm font-[Merriweather]">Vice Catalyst</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="border border-[#272118] bg-[#120F0C] rounded-lg p-5 text-center">
+            <div className="w-24 h-24 rounded-full mx-auto mb-3 overflow-hidden border border-amber-500/25 bg-[#16120D]">
+              <LazyImage
+                src="https://imperviousgeneration.my.id/_next/image?url=%2Fassets%2Fimages%2Fketua%2Ffachrillah.webp&w=3840&q=75"
+                alt="Muhammad Fachrillah"
+                className="w-full h-full object-cover"
+              />
             </div>
-
-            <div className="liquid-card p-6 text-center">
-               <div className="w-64 rounded-2xl mx-auto mb-4 flex items-center justify-center overflow-hidden">
-                <LazyImage 
-                  src="https://imperviousgeneration.my.id/_next/image?url=%2Fassets%2Fimages%2Fketua%2Ffawwaz.webp&w=3840&q=75"
-                  alt="Fawwaz Muhammad Royyan"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h3 className="text-xl font-bold mb-2 font-[Bricolage_Grotesque] text-amber-300">
-                Fawwaz Muhammad Royyan
-              </h3>
-              <p className="text-amber-400 font-[Merriweather] mb-2">Ketua 3</p>
-              <p className="text-amber-100/60 text-sm font-[Merriweather]">Support Catalyst</p>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-          <div className="liquid-card p-8 md:p-12 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-[Bricolage_Grotesque] text-amber-300">
-              Bergabunglah dengan Perjalanan Kami
-            </h2>
-            <p className="text-lg text-amber-100/80 mb-8 font-[Merriweather]">
-              Jelajahi artikel dan cerita dari Impervious Generation
+            <h4 className="text-sm font-bold font-[Bricolage_Grotesque] text-[#FAF4E8]">
+              Muhammad Fachrillah
+            </h4>
+            <p className="text-xs text-amber-400 font-medium font-[Bricolage_Grotesque] mt-0.5">
+              Ketua 1
             </p>
-            <Link
-              to="/jelajahi"
-              className="liquid-btn btn-lg"
-            >
-              Jelajahi Artikel
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </Link>
+            <p className="text-[11px] text-[#7A6D5A] font-[Merriweather] mt-1">
+              Prime Catalyst
+            </p>
           </div>
-        </section>
 
-        <Footer />
-      </div>
+          <div className="border border-[#272118] bg-[#120F0C] rounded-lg p-5 text-center">
+            <div className="w-24 h-24 rounded-full mx-auto mb-3 overflow-hidden border border-amber-500/25 bg-[#16120D]">
+              <LazyImage
+                src="https://imperviousgeneration.my.id/_next/image?url=%2Fassets%2Fimages%2Fketua%2Fyusuf.webp&w=3840&q=75"
+                alt="Yusuf Praba Andhika Prayoga"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <h4 className="text-sm font-bold font-[Bricolage_Grotesque] text-[#FAF4E8]">
+              Yusuf Praba Andhika Prayoga
+            </h4>
+            <p className="text-xs text-amber-400 font-medium font-[Bricolage_Grotesque] mt-0.5">
+              Ketua 2
+            </p>
+            <p className="text-[11px] text-[#7A6D5A] font-[Merriweather] mt-1">
+              Vice Catalyst
+            </p>
+          </div>
+
+          <div className="border border-[#272118] bg-[#120F0C] rounded-lg p-5 text-center">
+            <div className="w-24 h-24 rounded-full mx-auto mb-3 overflow-hidden border border-amber-500/25 bg-[#16120D]">
+              <LazyImage
+                src="https://imperviousgeneration.my.id/_next/image?url=%2Fassets%2Fimages%2Fketua%2Ffawwaz.webp&w=3840&q=75"
+                alt="Fawwaz Muhammad Royyan"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <h4 className="text-sm font-bold font-[Bricolage_Grotesque] text-[#FAF4E8]">
+              Fawwaz Muhammad Royyan
+            </h4>
+            <p className="text-xs text-amber-400 font-medium font-[Bricolage_Grotesque] mt-0.5">
+              Ketua 3
+            </p>
+            <p className="text-[11px] text-[#7A6D5A] font-[Merriweather] mt-1">
+              Support Catalyst
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10">
+        <div className="border border-[#272118] bg-[#120F0C] rounded-lg p-6 md:p-8 text-center">
+          <h3 className="text-xl md:text-2xl font-bold font-[Texturina] text-[#FAF4E8] mb-2">
+            Mulai Membaca Jurnal
+          </h3>
+          <p className="text-xs md:text-sm text-[#8F816B] font-[Merriweather] mb-5 max-w-md mx-auto">
+            Jelajahi tulisan, analisis, dan dokumentasi warta Impervious Generation.
+          </p>
+          <Link to="/jelajahi" className="btn-primary btn-sm inline-flex font-[Bricolage_Grotesque]">
+            Buka Katalog Artikel →
+          </Link>
+        </div>
+      </section>
+
+      <Footer />
     </main>
   );
 }

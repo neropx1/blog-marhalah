@@ -27,5 +27,15 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1000,
     cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("react-markdown") || id.includes("rehype")) return "markdown";
+            if (id.includes("@tabler/icons")) return "icons";
+          }
+        },
+      },
+    },
   },
 });
